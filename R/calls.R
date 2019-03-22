@@ -1,24 +1,18 @@
-#' Title
+#' Capture calls
 #'
-#' @param e
-#'
-#' @return
-#' @export
-#'
-#' @examples
-captureCalls <- function(e) {
-  e$calls <- sys.calls()
-  signalCondition(e)
+#' @param error error object
+captureCalls <- function(error) {
+  error$calls <- sys.calls()
+  signalCondition(error)
 }
 
-#' Title
+
+#' Create safe function
 #'
-#' @param z
+#' @param z the function whose errors we want to track
 #'
-#' @return
+#' @return a function
 #' @export
-#'
-#' @examples
 withCapturedCalls <- function(z) {
   f <- function(...){
     return(withCallingHandlers(z(...), error = captureCalls))
@@ -26,11 +20,12 @@ withCapturedCalls <- function(z) {
   return(f)
 }
 
-#' Title
+
+#' Convert function call to stacktrace
 #'
-#' @param calls
+#' @param calls function call
 #'
-#' @return
+#' @return a data.frame
 calls2stacktrace <- function(calls) {
   srcrefs <- sapply(calls, function(v) {
     srcref <- attr(v, "srcref")

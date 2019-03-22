@@ -1,17 +1,17 @@
-# sentryR uses an environment to track state within the package
-# plays well with the glue package too
-.SentryEnv <- new.env()
-
-
 #' Parse Sentry DSN
 #'
 #' @param dsn the DSN of a Sentry project as a character string.
 #'
 #' @return populates the .SentryEnv environment with character strings
+#'
+#' @importFrom stringr str_match regex
+#' @importFrom stats setNames
+#'
+#' @export
 sentry.config <- function(dsn) {
   stopifnot(is.character(dsn) && dsn != "")
 
-  l <- setNames(
+  l <- stats::setNames(
     as.list(stringr::str_match(dsn, stringr::regex("(.*)://(\\w*)(:(\\w*))?@(.*)/(.*)"))),
     c("dsn", "protocol", "public_key", "ignore", "secret_key", "host", "project_id")
   )
@@ -25,6 +25,7 @@ sentry.config <- function(dsn) {
 #' Check if Sentry is configured
 #'
 #' @return boolean
+#' @importFrom purrr map_lgl
 sentry.configured <- function() {
 
   mandatory_fields <- purrr::map_lgl(c("public_key", "host", "project_id"),
@@ -38,12 +39,18 @@ sentry.configured <- function() {
 
 #' Send a notification on error
 #'
-#' @param error
-#' @param req
+#' @param error error object
+#' @param req request object from Plumber
+#' @param tz timezone passed to as.POSIXlt, Default: "GMT"
+#' @param rows_per_field limit the number of rows sent to Sentry, Default: 10
 #'
-#' @return
-#' @example
-#' tryCatch(stop("error"), error = sentry.captureException)
+#' @return message
+#' @importFrom magrittr %>%
+#' @importFrom jsonlite fromJSON toJSON
+#' @importFrom purrr map
+#' @importFrom glue glue
+#' @importFrom httr POST add_headers status_code
+#' @export
 sentry.captureException <- function(error, req, tz = "GMT", rows_per_field = 10) {
   if (!sentry.configured()) {
     message("Connection to Sentry is not configured.")
@@ -77,8 +84,8 @@ sentry.captureException <- function(error, req, tz = "GMT", rows_per_field = 10)
     "logger": "none",
     "platform": "other",
     "sdk": {
-      "name": "sentryR",
-      "version": "packageVersion("sentryR")"
+      "name": "<<.packageName>>",
+      "version": "<<as.character(packageVersion(.packageName))>>"
     },
     "exception": [{
       "type": "<<err.type>>",
@@ -105,13 +112,17 @@ sentry.captureException <- function(error, req, tz = "GMT", rows_per_field = 10)
   )
 
   if (httr::status_code(resp) == 201 || httr::status_code(resp) == 200) {
-    cat("OK.\n")
+    message("OK.\n")
   } else {
-    cat("Error connecting to Sentry:", httr::content(resp, "text"), "\n")
+    message("Error connecting to Sentry:", httr::content(resp, "text"), "\n")
   }
 }
 
 
+#' Build the response URL
+#'
+#' @return a character string
+#' @importFrom glue glue
 .sentry.url <- function() {
   glue::glue("{protocol}://{host}/api/{project_id}/store/", .envir = .SentryEnv)
 }
@@ -120,6 +131,7 @@ sentry.captureException <- function(error, req, tz = "GMT", rows_per_field = 10)
 #' Set the response header
 #'
 #' @return a character vector
+#' @importFrom glue glue
 .sentry.header <- function() {
   if (!is.na(.SentryEnv$secret_key)) {
     c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,

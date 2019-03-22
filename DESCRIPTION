@@ -12,3 +12,13 @@ Encoding: UTF-8
 LazyData: true
 URL: https://github.com/jcpsantiago/sentryR
 BugReports: https://github.com/jcpsantiago/sentryR/issues
+RoxygenNote: 6.1.1
+Imports:
+  glue,
+  purrr,
+  httr,
+  jsonlite,
+  stringr,
+  stats,
+  magrittr
+  
