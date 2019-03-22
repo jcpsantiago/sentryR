@@ -1,0 +1,14 @@
+Package: sentryR
+Type: Package
+Title: Send Errors To Sentry
+Version: 0.1.0
+Authors@R: c(
+  person("Joao", "Santiago", email = "santiago@billie.io", role = c("aut", "cre")),
+  person("Daniel", "Kirsch", role = "aut"),
+  person("Billie GmbH", role = "cph"))
+Description: Capture errors and send them to a Sentry project.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+URL: https://github.com/jcpsantiago/sentryR
+BugReports: https://github.com/jcpsantiago/sentryR/issues
