@@ -112,7 +112,7 @@ sentry.captureException <- function(error, req, tz = "GMT", rows_per_field = 10)
   )
 
   if (httr::status_code(resp) == 201 || httr::status_code(resp) == 200) {
-    message("OK.\n")
+    message("Error successfully sent to Sentry, check your project for more details.\n")
   } else {
     message("Error connecting to Sentry:", httr::content(resp, "text"), "\n")
   }
