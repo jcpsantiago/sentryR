@@ -4,14 +4,12 @@
 \alias{sentry.captureException}
 \title{Send a notification on error}
 \usage{
-sentry.captureException(error, req, tz = "GMT", rows_per_field = 10)
+sentry.captureException(error, req, rows_per_field = 10)
 }
 \arguments{
 \item{error}{error object}
 
 \item{req}{request object from Plumber}
-
-\item{tz}{timezone passed to as.POSIXlt, Default: "GMT"}
 
 \item{rows_per_field}{limit the number of rows sent to Sentry, Default: 10}
 }

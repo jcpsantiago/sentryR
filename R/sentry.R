@@ -41,7 +41,6 @@ sentry.configured <- function() {
 #'
 #' @param error error object
 #' @param req request object from Plumber
-#' @param tz timezone passed to as.POSIXlt, Default: "GMT"
 #' @param rows_per_field limit the number of rows sent to Sentry, Default: 10
 #'
 #' @return message
@@ -51,7 +50,7 @@ sentry.configured <- function() {
 #' @importFrom glue glue
 #' @importFrom httr POST add_headers status_code
 #' @export
-sentry.captureException <- function(error, req, tz = "GMT", rows_per_field = 10) {
+sentry.captureException <- function(error, req, rows_per_field = 10) {
   if (!sentry.configured()) {
     message("Connection to Sentry is not configured.")
     return()
@@ -63,15 +62,16 @@ sentry.captureException <- function(error, req, tz = "GMT", rows_per_field = 10)
     stacktrace <- list()
   }
 
-  err.type <- paste(class(error), collapse = ",")
-  err.message <- gsub('(\\n|\\")', "", as.character(error))
+  error_type <- paste(class(error), collapse = ",")
+  error_message <- gsub('(\\n|\\")', "", as.character(error))
 
-  timestamp <- strftime(as.POSIXlt(Sys.time(), tz = tz), "%Y-%m-%dT%H:%M:%S")
+  # Sentry will treat the timezone as UTC/GMT by default
+  timestamp <- strftime(as.POSIXlt(Sys.time(), tz = "GMT"), "%Y-%m-%dT%H:%M:%S")
 
-  ## we shouldn't send the whole body to sentry, because some requests
-  ## are really really big. The default is set to 10 rows for now.
-  ## The as.character is needed otherwise sentry will complain
-  ## about malformed JSON
+  # we shouldn't send the whole body to sentry, because some requests
+  # are really really big. The default is set to 10 rows for now.
+  # The as.character is needed otherwise sentry will complain
+  # about malformed JSON
   request_body <- jsonlite::fromJSON(req$postBody) %>%
     purrr::map(., ~ head(., rows_per_field)) %>%
     jsonlite::toJSON(null = "null", auto_unbox = TRUE) %>%
@@ -81,17 +81,17 @@ sentry.captureException <- function(error, req, tz = "GMT", rows_per_field = 10)
 
   payload <- glue::glue('{
     "timestamp": "<<timestamp>>",
-    "logger": "none",
+    "logger": "R",
     "platform": "other",
     "sdk": {
       "name": "<<.packageName>>",
       "version": "<<as.character(packageVersion(.packageName))>>"
     },
     "exception": [{
-      "type": "<<err.type>>",
-      "value": "<<error$message>>"
+      "type": "<<error_type>>",
+      "value": "<<error_message>>",
+      "stacktrace": {"frames": <<stacktrace_json>>}
     }],
-    "stacktrace": {"frames": <<stacktrace_json>>},
     "request": {
       "url": "<<req$PATH_INFO>>",
       "method": "<<req$REQUEST_METHOD>>",
