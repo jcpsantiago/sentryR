@@ -21,3 +21,6 @@ Imports:
   stringr,
   stats,
   magrittr
+Suggests: 
+    testthat,
+    mockery
