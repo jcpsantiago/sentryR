@@ -6,8 +6,8 @@
 
 # sentryR
 
-Connect your APIs to [Sentry](https://sentry.io) and get stacktraces, analyze
-the payloads.
+`sentryR` is an unofficial R client for [Sentry](https://sentry.io). 
+Currently tested with Plumber APIs.
 
 
 ## Installation
@@ -20,7 +20,7 @@ devtools::install_github("ozean12/sentryR")
 
 ## Example
 
-Configure your project in Sentry and set its DSN as an environment variable.
+Configure your project in [Sentry](https://sentry.io), and set its DSN as an environment variable.
 
 Example Plumber API:
 ```r
@@ -48,3 +48,7 @@ api.error <- withCapturedCalls(function(res, req){
   stop("error")
 })
 ```
+
+## Contributing
+
+PRs and issue are welcome! :tada:
