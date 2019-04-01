@@ -51,4 +51,4 @@ api.error <- withCapturedCalls(function(res, req){
 
 ## Contributing
 
-PRs and issue are welcome! :tada:
+PRs and issues are welcome! :tada:
