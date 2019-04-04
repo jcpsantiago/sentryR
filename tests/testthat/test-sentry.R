@@ -60,25 +60,17 @@ test_that("we build the correct headers", {
   rm(list = ls(envir = .SentryEnv), envir = .SentryEnv)
 })
 
-test_that("payload is built", {
-
-  req <- new.env()
-  req$postBody <- "{a: 123}"
-  req$PATH_INFO <- "/endpoint"
-  req$REQUEST_METHOD <- "POST"
-  req$HTTP_CONTENT_TYPE <- "application/json"
-  req$HTTP_HOST <- "127.0.0.1"
-
-  error <- "simple.error"
-
-  .SentryEnv$public_key <- "1234"
-  .SentryEnv$host <- "sentry.io"
-  .SentryEnv$project_id <- "1"
-
-  not_configured <- mockery::mock(FALSE)
+test_that("captureException complains", {
+  source(test_path("mocks.R"))
 
   with_mock(sentry.configured = not_configured, {
-    expect_message(sentry.captureException(error, req))
+    expect_message(sentry.captureException(error_nocalls, req))
   }, .env = "sentryR")
+
+  with_mock(sentry.configured = configured, {
+    expect_identical(sentry.captureException(error_wcalls, req), list())
+  }, .env = "sentryR")
+
+  rm(list = ls(envir = .SentryEnv), envir = .SentryEnv)
 })
 
