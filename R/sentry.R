@@ -9,13 +9,13 @@
 #'
 #' @export
 sentry.config <- function(dsn) {
-  stopifnot(is.character(dsn) && dsn != "")
-
   l <- stats::setNames(
     as.list(stringr::str_match(dsn, stringr::regex("(.*)://(\\w*)(:(\\w*))?@(.*)/(.*)"))),
     c("dsn", "protocol", "public_key", "ignore", "secret_key", "host", "project_id")
   )
 
+  # Was sentry correctly configured? Abort if a dsn is passed (dsn != "") AND no dsn could be parsed
+  # by the regex (is.na(l$dsn)) – the following line is the inverse statement as per de Morgan's law
   stopifnot(dsn == "" || !is.na(l$dsn))
 
   invisible(list2env(l, .SentryEnv))
