@@ -1,6 +1,6 @@
 Package: sentryR
 Type: Package
-Title: Send Errors To Sentry
+Title: Send Errors to Sentry
 Version: 0.1.0
 Authors@R: c(
   person("Joao", "Santiago", email = "santiago@billie.io", role = c("aut", "cre")),
@@ -10,8 +10,8 @@ Description: Capture errors and send them to a Sentry project.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-URL: https://github.com/jcpsantiago/sentryR
-BugReports: https://github.com/jcpsantiago/sentryR/issues
+URL: https://github.com/ozean12/sentryR
+BugReports: https://github.com/ozean12/sentryR/issues
 RoxygenNote: 6.1.1
 Imports:
   glue,
