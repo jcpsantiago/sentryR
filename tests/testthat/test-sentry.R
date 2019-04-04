@@ -1,7 +1,6 @@
 context("test-sentry")
 
 test_that("setting configuration works", {
-  expect_error(sentry.config(""))
   expect_error(sentry.config("http://www.purple.com"))
 })
 
@@ -65,10 +64,6 @@ test_that("captureException complains", {
 
   with_mock(sentry.configured = not_configured, {
     expect_message(sentry.captureException(error_nocalls, req))
-  }, .env = "sentryR")
-
-  with_mock(sentry.configured = configured, {
-    expect_identical(sentry.captureException(error_wcalls, req), list())
   }, .env = "sentryR")
 
   rm(list = ls(envir = .SentryEnv), envir = .SentryEnv)
