@@ -14,6 +14,7 @@ error_wcalls <- simpleError("Reverse polarisation!!",
                             call = function() "He's dead Jim.")
 
 # mock sentry DSN
+.SentryEnv <- new.env()
 .SentryEnv$public_key <- "1234"
 .SentryEnv$host <- "sentry.io"
 .SentryEnv$project_id <- "1"
