@@ -140,13 +140,14 @@ sentry.captureException <- function(error, req, rows_per_field = 10) {
                                    sentry_timestamp={as.integer(Sys.time())},
                                    sentry_key={public_key},
                                    sentry_secret={secret_key}",
-                                   .envir = .SentryEnv))
+                                   .envir = .SentryEnv) %>%
+        stringr::str_replace_all("[\r\n]" , ""))
   } else {
     c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,
                                    sentry_client=sentryR/{packageVersion('sentryR')},
                                    sentry_timestamp={as.integer(Sys.time())},
                                    sentry_key={public_key}",
-                                   .envir = .SentryEnv)) %>%
-      stringr::str_replace_all("[\r\n]", "")
+                                   .envir = .SentryEnv) %>%
+        stringr::str_replace_all("[\r\n]" , ""))
   }
 }
