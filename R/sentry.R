@@ -108,13 +108,14 @@ sentry.captureException <- function(error, req, rows_per_field = 10) {
   resp <- httr::POST(
     url = .sentry.url(),
     body = payload, encode = "json",
-    httr::add_headers(.headers = .sentry.header())
+    httr::add_headers(.headers = "yoo")
   )
 
   if (httr::status_code(resp) == 201 || httr::status_code(resp) == 200) {
-    message("Error successfully sent to Sentry, check your project for more details.\n")
+    warning("Error successfully sent to Sentry, check your project for more details.\n")
   } else {
-    message("Error connecting to Sentry:", httr::content(resp, "text"), "\n")
+    warning("Error connecting to Sentry:",
+            httr::content(resp, "text", encoding = "UTF-8"), "\n")
   }
 }
 

@@ -1,10 +1,9 @@
 # mock request
-req <- new.env()
-req$postBody <- '{"a": 123}'
-req$PATH_INFO <- "/endpoint"
-req$REQUEST_METHOD <- "POST"
-req$HTTP_CONTENT_TYPE <- "application/json"
-req$HTTP_HOST <- "127.0.0.1"
+req <- list(PATH_INFO = "/launch_eva01",
+            REQUEST_METHOD = "angel_attack",
+            postBody = '[{"battery_level": "5 min"}]',
+            HTTP_CONTENT_TYPE = "emergency launch",
+            HTTP_HOST = "central dogma")
 
 # mock error
 error_nocalls <- simpleError("Reverse polarisation!!",

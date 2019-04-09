@@ -69,3 +69,23 @@ test_that("captureException complains", {
   rm(list = ls(envir = .SentryEnv), envir = .SentryEnv)
 })
 
+test_that("inform about Sentry responses", {
+  source(test_path("mocks.R"))
+
+  mockery::stub(sentry.captureException, "sentry.configured", TRUE)
+  mockery::stub(sentry.captureException, "httr::POST", "foobar")
+  mockery::stub(sentry.captureException, "httr::status_code", 200)
+
+  expect_warning(sentry.captureException(error_nocalls, req),
+                 "Error successfully sent to Sentry, check your project for more details.\n")
+
+  mockery::stub(sentry.captureException, "httr::status_code", 400)
+  mockery::stub(sentry.captureException, "httr::content", " error from sentry")
+  expect_warning(sentry.captureException(error_nocalls, req),
+                 paste("Error connecting to Sentry:",
+                        "error from sentry"))
+
+
+  rm(list = ls(envir = .SentryEnv), envir = .SentryEnv)
+})
+
