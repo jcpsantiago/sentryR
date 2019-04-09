@@ -69,7 +69,7 @@ test_that("inform about Sentry responses", {
   mockery::stub(sentry.captureException, "httr::POST", "foobar")
   mockery::stub(sentry.captureException, "httr::status_code", 200)
 
-  expect_warning(sentry.captureException(error_nocalls, req),
+  expect_message(sentry.captureException(error_nocalls, req),
                  "Error successfully sent to Sentry, check your project for more details.\n")
 
   mockery::stub(sentry.captureException, "httr::status_code", 400)
