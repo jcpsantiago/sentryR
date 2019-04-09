@@ -56,7 +56,7 @@ test_that("captureException complains", {
   source(test_path("mocks.R"))
 
   with_mock(sentry.configured = not_configured, {
-    expect_message(sentry.captureException(error_nocalls, req))
+    expect_warning(sentry.captureException(error_nocalls, req))
   }, .env = "sentryR")
 
   rm(list = ls(envir = .SentryEnv), envir = .SentryEnv)

@@ -52,7 +52,7 @@ sentry.configured <- function() {
 #' @export
 sentry.captureException <- function(error, req, rows_per_field = 10) {
   if (!sentry.configured()) {
-    message("Connection to Sentry is not configured.")
+    warning("An error occured but Sentry is not configured.")
     return()
   }
 
