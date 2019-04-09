@@ -108,7 +108,7 @@ sentry.captureException <- function(error, req, rows_per_field = 10) {
   resp <- httr::POST(
     url = .sentry.url(),
     body = payload, encode = "json",
-    httr::add_headers(.headers = "yoo")
+    httr::add_headers(.headers = .sentry.header())
   )
 
   if (httr::status_code(resp) == 201 || httr::status_code(resp) == 200) {
@@ -135,10 +135,18 @@ sentry.captureException <- function(error, req, rows_per_field = 10) {
 #' @importFrom glue glue
 .sentry.header <- function() {
   if (!is.na(.SentryEnv$secret_key)) {
-    c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,sentry_client=sentryR/{packageVersion('sentryR')},sentry_timestamp={as.integer(Sys.time())},sentry_key={public_key},sentry_secret={secret_key}",
+    c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,
+                                   sentry_client=sentryR/{packageVersion('sentryR')},
+                                   sentry_timestamp={as.integer(Sys.time())},
+                                   sentry_key={public_key},
+                                   sentry_secret={secret_key}",
                                    .envir = .SentryEnv))
   } else {
-    c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,sentry_client=sentryR/{packageVersion('sentryR')},sentry_timestamp={as.integer(Sys.time())},sentry_key={public_key}",
-                                   .envir = .SentryEnv))
+    c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,
+                                   sentry_client=sentryR/{packageVersion('sentryR')},
+                                   sentry_timestamp={as.integer(Sys.time())},
+                                   sentry_key={public_key}",
+                                   .envir = .SentryEnv)) %>%
+      stringr::str_replace_all("[\r\n]", "")
   }
 }
