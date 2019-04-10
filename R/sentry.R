@@ -135,19 +135,21 @@ sentry.captureException <- function(error, req, rows_per_field = 10) {
 #' @importFrom glue glue
 .sentry.header <- function() {
   if (!is.na(.SentryEnv$secret_key)) {
+    # looks nicer, but the \n could create some issues, so we remove them
+    # just in case
     c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,
                                    sentry_client=sentryR/{packageVersion('sentryR')},
                                    sentry_timestamp={as.integer(Sys.time())},
                                    sentry_key={public_key},
                                    sentry_secret={secret_key}",
                                    .envir = .SentryEnv) %>%
-        stringr::str_replace_all("[\r\n]" , ""))
+        gsub("[\r\n]", "", .))
   } else {
     c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,
                                    sentry_client=sentryR/{packageVersion('sentryR')},
                                    sentry_timestamp={as.integer(Sys.time())},
                                    sentry_key={public_key}",
                                    .envir = .SentryEnv) %>%
-        stringr::str_replace_all("[\r\n]" , ""))
+        gsub("[\r\n]", "", .))
   }
 }
