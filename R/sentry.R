@@ -114,6 +114,7 @@ sentry.captureException <- function(error, req, rows_per_field = 10) {
   if (httr::status_code(resp) == 201 || httr::status_code(resp) == 200) {
     message("Error successfully sent to Sentry, check your project for more details.\n")
   } else {
+    message(.sentry.header())
     warning("Error connecting to Sentry:",
             httr::content(resp, "text", encoding = "UTF-8"), "\n")
   }
