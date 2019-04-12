@@ -52,7 +52,7 @@ sentry.configured <- function() {
 #' @export
 sentry.captureException <- function(error, req, rows_per_field = 10) {
   if (!sentry.configured()) {
-    message("Connection to Sentry is not configured.")
+    warning("An error occured but Sentry is not configured.")
     return()
   }
 
@@ -114,7 +114,8 @@ sentry.captureException <- function(error, req, rows_per_field = 10) {
   if (httr::status_code(resp) == 201 || httr::status_code(resp) == 200) {
     message("Error successfully sent to Sentry, check your project for more details.\n")
   } else {
-    message("Error connecting to Sentry:", httr::content(resp, "text"), "\n")
+    warning("Error connecting to Sentry:",
+            httr::content(resp, "text", encoding = "UTF-8"), "\n")
   }
 }
 
@@ -134,17 +135,21 @@ sentry.captureException <- function(error, req, rows_per_field = 10) {
 #' @importFrom glue glue
 .sentry.header <- function() {
   if (!is.na(.SentryEnv$secret_key)) {
+    # looks nicer, but the \n could create some issues, so we remove them
+    # just in case
     c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,
                                    sentry_client=sentryR/{packageVersion('sentryR')},
                                    sentry_timestamp={as.integer(Sys.time())},
                                    sentry_key={public_key},
                                    sentry_secret={secret_key}",
-                                   .envir = .SentryEnv))
+                                   .envir = .SentryEnv) %>%
+        gsub("[\r\n]", "", .))
   } else {
     c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,
                                    sentry_client=sentryR/{packageVersion('sentryR')},
                                    sentry_timestamp={as.integer(Sys.time())},
                                    sentry_key={public_key}",
-                                   .envir = .SentryEnv))
+                                   .envir = .SentryEnv) %>%
+        gsub("[\r\n]", "", .))
   }
 }
