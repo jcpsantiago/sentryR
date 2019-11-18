@@ -62,6 +62,16 @@ sentry.captureException <- function(error, req, rows_per_field = 10) {
     stacktrace <- list()
   }
 
+  # Ensure a non-empty body for jsonlite::fromJSON(req$postBody)
+  if (identical(req$postBody, character(0))) {
+    req$postBody <- '[]'
+  }
+
+  # Ensure that req$HTTP_CONTENT_TYPE is exists
+  if (is.null(req$HTTP_CONTENT_TYPE)) {
+    req$HTTP_CONTENT_TYPE <- NA
+  }
+
   error_type <- paste(class(error), collapse = ",")
   error_message <- gsub('(\\n|\\")', "", as.character(error))
 
@@ -77,7 +87,7 @@ sentry.captureException <- function(error, req, rows_per_field = 10) {
     jsonlite::toJSON(null = "null", auto_unbox = TRUE) %>%
     as.character(.)
 
-  stacktrace_json <- jsonlite::toJSON(stacktrace, auto_unbox = T)
+  stacktrace_json <- jsonlite::toJSON(stacktrace, auto_unbox = TRUE)
 
   payload <- glue::glue('{
     "timestamp": "<<timestamp>>",
