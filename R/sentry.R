@@ -72,12 +72,26 @@ sentry.captureException <- function(error, req, rows_per_field = 10) {
   # are really really big. The default is set to 10 rows for now.
   # The as.character is needed otherwise sentry will complain
   # about malformed JSON
-  request_body <- jsonlite::fromJSON(req$postBody) %>%
-    purrr::map(., ~ head(., rows_per_field)) %>%
-    jsonlite::toJSON(null = "null", auto_unbox = TRUE) %>%
-    as.character(.)
+  if (is.na(req$postBody)) {
+    request_body <- jsonlite::toJSON("No request body available.")
+  } else {
+    request_body <- jsonlite::fromJSON(req$postBody) %>%
+      purrr::map(., ~ head(., rows_per_field)) %>%
+      jsonlite::toJSON(null = "null", auto_unbox = TRUE) %>%
+      as.character(.)
+  }
 
   stacktrace_json <- jsonlite::toJSON(stacktrace, auto_unbox = T)
+
+  null_transformer <- function(str = "NULL") {
+    function(text, envir) {
+      out <- glue::identity_transformer(text, envir)
+      if (is.null(out)) {
+        return(str)
+      }
+      out
+    }
+  }
 
   payload <- glue::glue('{
     "timestamp": "<<timestamp>>",
@@ -103,7 +117,8 @@ sentry.captureException <- function(error, req, rows_per_field = 10) {
         "Host": "<<req$HTTP_HOST>>"
       }
     }
-  }', .open = "<<", .close = ">>")
+  }', .open = "<<", .close = ">>", .na = "Not available.",
+      .transformer = null_transformer("{NULL}"))
 
   resp <- httr::POST(
     url = .sentry.url(),
