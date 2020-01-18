@@ -1,7 +1,7 @@
 Package: sentryR
 Type: Package
 Title: Send Errors to Sentry
-Version: 0.1.0
+Version: 1.0.0
 Authors@R: c(
   person("Joao", "Santiago", email = "santiago@billie.io", role = c("aut", "cre")),
   person("Daniel", "Kirsch", role = "aut"),
@@ -12,7 +12,7 @@ Encoding: UTF-8
 LazyData: true
 URL: https://github.com/ozean12/sentryR
 BugReports: https://github.com/ozean12/sentryR/issues
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.1
 Imports:
   glue,
   purrr,
