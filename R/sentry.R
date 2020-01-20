@@ -65,7 +65,7 @@ configure_sentry <- function(dsn, appname = NULL, appversion = NULL) {
     app_context <- list(
       app = list(
         app_name = appname,
-        app_version = appversion
+        app_version = as.character(appversion)
       )
     )
     app_context[sapply(app_context, is.null)] <- NULL
