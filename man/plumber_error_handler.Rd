@@ -22,7 +22,7 @@ a list with response payload
 Error handler with Sentry reporting
 }
 \examples{
-/dontrun{
+\dontrun{
 sentryR::configure_sentry(Sys.getenv("SENTRY_DSN"))
 pr <- plumber::plumb("example_plumber.R")
 pr$setErrorHandler(sentryR::plumber_error_handler)

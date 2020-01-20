@@ -15,3 +15,8 @@ sends message to Sentry
 \description{
 Send a message to a Sentry server
 }
+\examples{
+\dontrun{
+capture(message = "oh hai there!") # send message to sentry
+}
+}

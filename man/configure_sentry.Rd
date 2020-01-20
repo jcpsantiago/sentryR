@@ -4,10 +4,14 @@
 \alias{configure_sentry}
 \title{Configure Sentry}
 \usage{
-configure_sentry(dsn)
+configure_sentry(dsn, appname = NULL, appversion = NULL)
 }
 \arguments{
 \item{dsn}{the DSN of a Sentry project.}
+
+\item{appname}{name of your application (optional). Default: NULL}
+
+\item{appversion}{version of your application (optional). Default: NULL}
 }
 \value{
 populates the sentry_env environment with character strings

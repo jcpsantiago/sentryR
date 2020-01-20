@@ -87,6 +87,9 @@ test_that("we build the correct headers", {
   # without deprecated secret key
   sentry_env$public_key <- "1234"
   sentry_env$secret_key <- NA
+  sentry_env$pkg_version <- packageVersion('sentryR')
+  sentry_env$as.integer <- as.integer
+  sentry_env$Sys.time <- Sys.time
 
   expect_equal(sentry_headers(),
                c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,sentry_client=sentryR/{packageVersion('sentryR')},sentry_timestamp={as.integer(Sys.time())},sentry_key=1234")))
@@ -99,12 +102,12 @@ test_that("we build the correct headers", {
   rm(list = ls(envir = sentry_env), envir = sentry_env)
 })
 
-test_that("captureException complains", {
+test_that("capture_exception complains", {
   source(test_path("mocks.R"))
 
   with_mock(is_sentry_configured = not_configured, {
-    expect_warning(sentry.captureException(error_nocalls, req))
-  }, .env = "sentryR")
+    expect_warning(capture_exception(error_nocalls))
+  }, .env = "SentryR")
 
   rm(list = ls(envir = sentry_env), envir = sentry_env)
 })
@@ -112,16 +115,16 @@ test_that("captureException complains", {
 test_that("inform about Sentry responses", {
   source(test_path("mocks.R"))
 
-  mockery::stub(sentry.captureException, "is_sentry_configured", TRUE)
-  mockery::stub(sentry.captureException, "httr::POST", "foobar")
-  mockery::stub(sentry.captureException, "httr::status_code", 200)
+  mockery::stub(capture_exception, "is_sentry_configured", TRUE)
+  mockery::stub(capture_exception, "httr::POST", "foobar")
+  mockery::stub(capture_exception, "httr::status_code", 200)
 
-  expect_message(sentry.captureException(error_nocalls, req),
+  expect_message(capture_exception(error_nocalls),
                  "Error successfully sent to Sentry, check your project for more details.\n")
 
-  mockery::stub(sentry.captureException, "httr::status_code", 400)
-  mockery::stub(sentry.captureException, "httr::content", " error from sentry")
-  expect_warning(sentry.captureException(error_nocalls, req),
+  mockery::stub(capture_exception, "httr::status_code", 400)
+  mockery::stub(capture_exception, "httr::content", " error from sentry")
+  expect_warning(capture_exception(error_nocalls),
                  paste("Error connecting to Sentry:",
                        "error from sentry"))
 

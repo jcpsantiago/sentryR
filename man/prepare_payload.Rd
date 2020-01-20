@@ -10,8 +10,12 @@ prepare_payload(...)
 \item{...}{named parameters}
 }
 \value{
-
+a JSON character string
 }
 \description{
 Prepare JSON payload for Sentry
+}
+\examples{
+prepare_payload() # return only the core parameters
+prepare_payload(tags = list(foo = 123, bar = "meh")) # add one tag
 }
