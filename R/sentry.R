@@ -41,25 +41,40 @@ parse_dsn <- function(dsn) {
 #' Configure Sentry
 #'
 #' @param dsn the DSN of a Sentry project.
+#' @param .app_name name of your application (optional). Default: NULL
+#' @param .app_version version of your application (optional). Default: NULL
 #'
-#' @return populates the .SentryEnv environment with character strings
+#' @return populates the sentry_env environment with character strings
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #' configure_sentry("https://12345abcddbc45e49773bb1ca8d9c533@sentry.io/1234567")
-#' .SentryEnv$host # sentry.io
+#' sentry_env$host # sentry.io
 #' }
-configure_sentry <- function(dsn) {
+configure_sentry <- function(dsn, appname = NULL, appversion = NULL) {
 
   if (length(dsn) > 1) {
     stop("Expected one dsn, but received ", length(dsn), " instead.")
   }
 
-  parsed <- parse_dsn(dsn)
+  sentry_vars <- parse_dsn(dsn)
 
-  invisible(list2env(parsed, .SentryEnv))
+  if (any(!is.null(c(appname, appversion)))) {
+    app_context <- list(
+      app = list(
+        app_name = appname,
+        app_version = appversion
+      )
+    )
+    app_context[sapply(app_context, is.null)] <- NULL
+    context <- list(context = append(sentry_env$context, app_context))
+
+    sentry_vars <- append(sentry_vars, context)
+  }
+
+  invisible(list2env(sentry_vars, sentry_env))
 }
 
 

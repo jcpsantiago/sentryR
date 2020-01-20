@@ -10,7 +10,7 @@ configure_sentry(dsn)
 \item{dsn}{the DSN of a Sentry project.}
 }
 \value{
-populates the .SentryEnv environment with character strings
+populates the sentry_env environment with character strings
 }
 \description{
 Configure Sentry
@@ -18,6 +18,6 @@ Configure Sentry
 \examples{
 \dontrun{
 configure_sentry("https://12345abcddbc45e49773bb1ca8d9c533@sentry.io/1234567")
-.SentryEnv$host # sentry.io
+sentry_env$host # sentry.io
 }
 }
