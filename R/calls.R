@@ -69,7 +69,7 @@ calls_to_stacktrace <- function(calls) {
         start_line <- ifelse(start_line < 0, 1, start_line)
 
         if (!is.null(file$original)) {
-          return(file$original$lines[[start_line:line]])
+          return(file$original$lines[start_line:line])
         }
 
         return(file$lines[start_line:line])
@@ -80,7 +80,7 @@ calls_to_stacktrace <- function(calls) {
       if (!is.null(file)) {
 
         if (!is.null(file$original)) {
-          return(file$original$lines[[(line + 1):(line + 5)]])
+          return(file$original$lines[(line + 1):(line + 5)])
         }
 
         return(file$lines[(line + 1):(line + 5)])
