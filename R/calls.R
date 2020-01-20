@@ -58,28 +58,31 @@ calls_to_stacktrace <- function(calls) {
         if (!is.null(file$original)) {
           return(file$original$lines[[line]])
         }
-        print(file$lines[[line]])
         return(file$lines[[line]])
       }
       return(NA_character_)
     }, srcfiles, lineno)),
     pre_context = mapply(function(file, line) {
       if (!is.null(file)) {
-        print(file)
         # 5 line window is recommended by Sentry
         start_line <- line - 5
         start_line <- ifelse(start_line < 0, 1, start_line)
 
-        # TODO: skip empty lines?
+        if (!is.null(file$original)) {
+          return(file$original$lines[[start_line:line]])
+        }
+
         return(file$lines[start_line:line])
       }
       return(NA_character_)
     }, srcfiles, lineno),
     post_context = mapply(function(file, line) {
       if (!is.null(file)) {
-        print(file)
 
-        # TODO: skip empty lines?
+        if (!is.null(file$original)) {
+          return(file$original$lines[[(line + 1):(line + 5)]])
+        }
+
         return(file$lines[(line + 1):(line + 5)])
       }
       return(NA_character_)
