@@ -46,19 +46,19 @@ test_that("configuration is properly set", {
                  "Expected public_key, host and project_id to be present but can't find public_key, host, project_id\\.")
   expect_false(is_sentry_configured())
 
-  .SentryEnv$public_key <- "1234"
-  .SentryEnv$host <- "sentry.io"
+  sentry_env$public_key <- "1234"
+  sentry_env$host <- "sentry.io"
 
   expect_message(is_sentry_configured(),
                  "Expected public_key, host and project_id to be present but can't find project_id\\.")
   expect_false(is_sentry_configured())
 
 
-  .SentryEnv$project_id <- "1"
+  sentry_env$project_id <- "1"
 
   expect_true(is_sentry_configured())
 
-  rm(list = ls(envir = .SentryEnv), envir = .SentryEnv)
+  rm(list = ls(envir = sentry_env), envir = sentry_env)
 
 
   configure_sentry("https://1234@sentry.io/1")
@@ -66,37 +66,37 @@ test_that("configuration is properly set", {
   fields <- sapply(
     c("dsn", "protocol", "public_key", "ignore",
       "secret_key", "host", "project_id"),
-    function(x) exists(x, envir = .SentryEnv))
+    function(x) exists(x, envir = sentry_env))
 
   expect_true(all(fields))
 
-  rm(list = ls(envir = .SentryEnv), envir = .SentryEnv)
+  rm(list = ls(envir = sentry_env), envir = sentry_env)
 })
 
 test_that("we build the correct response url", {
-  .SentryEnv$protocol <- "https"
-  .SentryEnv$host <- "sentry.io"
-  .SentryEnv$project_id <- "1"
+  sentry_env$protocol <- "https"
+  sentry_env$host <- "sentry.io"
+  sentry_env$project_id <- "1"
 
   expect_equal(sentry_url(), "https://sentry.io/api/1/store/")
 
-  rm(list = ls(envir = .SentryEnv), envir = .SentryEnv)
+  rm(list = ls(envir = sentry_env), envir = sentry_env)
 })
 
 test_that("we build the correct headers", {
   # without deprecated secret key
-  .SentryEnv$public_key <- "1234"
-  .SentryEnv$secret_key <- NA
+  sentry_env$public_key <- "1234"
+  sentry_env$secret_key <- NA
 
   expect_equal(sentry_headers(),
                c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,sentry_client=sentryR/{packageVersion('sentryR')},sentry_timestamp={as.integer(Sys.time())},sentry_key=1234")))
 
   # with the deprecated secret key
-  .SentryEnv$secret_key <- "5678"
+  sentry_env$secret_key <- "5678"
   expect_equal(sentry_headers(),
                c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,sentry_client=sentryR/{packageVersion('sentryR')},sentry_timestamp={as.integer(Sys.time())},sentry_key=1234,sentry_secret=5678")))
 
-  rm(list = ls(envir = .SentryEnv), envir = .SentryEnv)
+  rm(list = ls(envir = sentry_env), envir = sentry_env)
 })
 
 test_that("captureException complains", {
@@ -106,7 +106,7 @@ test_that("captureException complains", {
     expect_warning(sentry.captureException(error_nocalls, req))
   }, .env = "sentryR")
 
-  rm(list = ls(envir = .SentryEnv), envir = .SentryEnv)
+  rm(list = ls(envir = sentry_env), envir = sentry_env)
 })
 
 test_that("inform about Sentry responses", {
@@ -126,6 +126,6 @@ test_that("inform about Sentry responses", {
                        "error from sentry"))
 
 
-  rm(list = ls(envir = .SentryEnv), envir = .SentryEnv)
+  rm(list = ls(envir = sentry_env), envir = sentry_env)
 })
 

@@ -93,12 +93,12 @@ is_sentry_configured <- function() {
 
   mandatory_fields <- sapply(
     c("public_key", "host", "project_id"),
-    function(x) exists(x, envir = .SentryEnv))
+    function(x) exists(x, envir = sentry_env))
 
   all_fields_present <- all(mandatory_fields) && all(!is.na(c(
-                          .SentryEnv$public_key,
-                          .SentryEnv$host,
-                          .SentryEnv$project_id
+                          sentry_env$public_key,
+                          sentry_env$host,
+                          sentry_env$project_id
                         )))
 
   if (!all_fields_present) {
@@ -142,11 +142,13 @@ prepare_payload <- function(...) {
     # Sentry will treat the timezone as UTC/GMT by default
     timestamp = strftime(as.POSIXlt(Sys.time(), tz = "GMT"), "%Y-%m-%dT%H:%M:%SZ"),
     logger = dplyr::if_else(is.null(user_inputs$logger), "R", user_inputs$logger),
-    platform = "R",
+    platform = "R", # Sentry will ignore this for now
     sdk = list(
       name = "SentryR",
       version = as.character(packageVersion("SentryR"))),
-    event_id = uuid
+    event_id = uuid,
+    modules = sentry_env$modules,
+    contexts = sentry_env$context
   )
 
   if ("logger" %in% names(user_inputs)) {
@@ -157,7 +159,8 @@ prepare_payload <- function(...) {
 
   payload <- jsonlite::toJSON(defaults_plus_userfields,
                               auto_unbox = TRUE,
-                              null = 'null')
+                              null = 'null',
+                              na = 'null')
 
   return(payload)
 }
@@ -235,22 +238,21 @@ capture_exception <- function(error, ..., .level = "error") {
   # TODO: hello? happy path?
   # TODO: wrangling the error should be a pure function prepare_error()
 
-  if (!is.null(error$calls)) {
-    stacktrace <- calls2stacktrace(error$calls)
+  if ("function_calls" %in% names(error)) {
+    stacktrace <- calls_to_stacktrace(error$function_calls)
   } else {
-    stacktrace <- data.frame()
+    stacktrace <- calls_to_stacktrace(sys.calls()[!prune_stack_trace(sys.parents())])
   }
 
-  error_type <- paste(class(error), collapse = ",")
+  error_type <- class(error)[[1]]
   error_message <- gsub('(\\n|\\")', "", as.character(error))
 
+  # tibble allows list-columns, which jsonlite translate to array of maps
   exception_payload <- list(
-    exception = tibble::tibble(
-      type = error_type,
-      message = error_message,
-      stacktrace = list(
-        frames = stacktrace
-      )
+    type = error_type,
+    value = error_message,
+    stacktrace = list(
+      frames = stacktrace
     )
   )
 
@@ -264,7 +266,7 @@ capture_exception <- function(error, ..., .level = "error") {
 #'
 #' @return a character string
 sentry_url <- function() {
-  glue::glue("{protocol}://{host}/api/{project_id}/store/", .envir = .SentryEnv)
+  glue::glue("{protocol}://{host}/api/{project_id}/store/", .envir = sentry_env)
 }
 
 
@@ -274,23 +276,23 @@ sentry_url <- function() {
 #'
 #' @return a character vector
 sentry_headers <- function() {
-  if (!is.na(.SentryEnv$secret_key)) {
+  if (!is.na(sentry_env$secret_key)) {
     # looks nicer, but the \n could create some issues, so we remove them
     # just in case
     c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,
-                                   sentry_client=sentryR/{packageVersion('sentryR')},
+                                   sentry_client=sentryR/{pkg_version},
                                    sentry_timestamp={as.integer(Sys.time())},
                                    sentry_key={public_key},
                                    sentry_secret={secret_key}",
-      .envir = .SentryEnv
+      .envir = sentry_env
     ) %>%
       gsub("[\r\n]", "", .))
   } else {
     c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,
-                                   sentry_client=sentryR/{packageVersion('sentryR')},
+                                   sentry_client=sentryR/{pkg_version},
                                    sentry_timestamp={as.integer(Sys.time())},
                                    sentry_key={public_key}",
-      .envir = .SentryEnv
+      .envir = sentry_env
     ) %>%
       gsub("[\r\n]", "", .))
   }
