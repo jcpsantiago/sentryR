@@ -35,10 +35,10 @@ with_captured_calls <- function(z) {
 #' \dontrun{
 #' sentryR::configure_sentry(Sys.getenv("SENTRY_DSN"))
 #' pr <- plumber::plumb("example_plumber.R")
-#' pr$setErrorHandler(sentryR::plumber_error_handler)
+#' pr$setErrorHandler(sentryR::sentry_error_handler)
 #' pr$run()
 #' }
-plumber_error_handler <- function(req, res, error, ...) {
+sentry_error_handler <- function(req, res, error, ...) {
   if (!is.null(req$postBody) && length(req$postBody) > 0) {
     req_body <- list(
       data = lapply(jsonlite::fromJSON(req$postBody), function(x) utils::head(x, 10)))
