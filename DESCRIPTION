@@ -10,6 +10,7 @@ Description: Capture errors and send them to a Sentry project.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+StagedInstall: no
 URL: https://github.com/ozean12/sentryR
 BugReports: https://github.com/ozean12/sentryR/issues
 RoxygenNote: 7.0.1
