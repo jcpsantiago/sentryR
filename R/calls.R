@@ -68,7 +68,7 @@ calls_to_stacktrace <- function(calls) {
         print(file)
         # 5 line window is recommended by Sentry
         start_line <- line - 5
-        start_line <- dplyr::if_else(start_line < 0, 1, start_line)
+        start_line <- ifelse(start_line < 0, 1, start_line)
 
         # TODO: skip empty lines?
         return(file$lines[start_line:line])

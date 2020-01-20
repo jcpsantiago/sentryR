@@ -32,7 +32,7 @@ with_captured_calls <- function(z) {
 #' @export
 #'
 #' @examples
-#' /dontrun{
+#' \dontrun{
 #' sentryR::configure_sentry(Sys.getenv("SENTRY_DSN"))
 #' pr <- plumber::plumb("example_plumber.R")
 #' pr$setErrorHandler(sentryR::plumber_error_handler)
@@ -54,7 +54,7 @@ plumber_error_handler <- function(req, res, error, ...) {
       `content-type` = req$HTTP_CONTENT_TYPE
     ),
     env = list(
-      REMOTE_ADDR = dplyr::if_else(
+      REMOTE_ADDR = ifelse(
         is.null(req$HTTP_HOST),
         req$SERVER_NAME,
         req$HTTP_HOST

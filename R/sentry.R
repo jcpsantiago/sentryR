@@ -41,8 +41,8 @@ parse_dsn <- function(dsn) {
 #' Configure Sentry
 #'
 #' @param dsn the DSN of a Sentry project.
-#' @param .app_name name of your application (optional). Default: NULL
-#' @param .app_version version of your application (optional). Default: NULL
+#' @param appname name of your application (optional). Default: NULL
+#' @param appversion version of your application (optional). Default: NULL
 #'
 #' @return populates the sentry_env environment with character strings
 #'
@@ -118,10 +118,12 @@ is_sentry_configured <- function() {
 #'
 #' @param ... named parameters
 #'
-#' @return
+#' @return a JSON character string
 #' @export
 #'
 #' @examples
+#' prepare_payload() # return only the core parameters
+#' prepare_payload(tags = list(foo = 123, bar = "meh")) # add one tag
 prepare_payload <- function(...) {
   # FIXME: don't allow unnamed lists e.g. prepare_paylaod(list(foo = 12, bar = 45))
   if (any(names(c(...)) == "")) {
@@ -141,11 +143,11 @@ prepare_payload <- function(...) {
   defaults <- list(
     # Sentry will treat the timezone as UTC/GMT by default
     timestamp = strftime(as.POSIXlt(Sys.time(), tz = "GMT"), "%Y-%m-%dT%H:%M:%SZ"),
-    logger = dplyr::if_else(is.null(user_inputs$logger), "R", user_inputs$logger),
+    logger = ifelse(is.null(user_inputs$logger), "R", user_inputs$logger),
     platform = "R", # Sentry will ignore this for now
     sdk = list(
       name = "SentryR",
-      version = as.character(packageVersion("SentryR"))),
+      version = as.character(utils::packageVersion("SentryR"))),
     event_id = uuid,
     modules = sentry_env$modules,
     contexts = sentry_env$context
@@ -174,6 +176,9 @@ prepare_payload <- function(...) {
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#' capture(message = "oh hai there!") # send message to sentry
+#' }
 capture <- function(...) {
 
   if (!is_sentry_configured()) {
