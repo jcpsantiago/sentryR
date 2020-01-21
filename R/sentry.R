@@ -136,15 +136,15 @@ is_sentry_configured <- function() {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' prepare_payload() # return only the core parameters
-#' prepare_payload(tags = list(foo = 123, bar = "meh")) # add one tag
+#' prepare_payload(tags = list(foo = 123, bar = "meh")) # add tags
+#' }
 prepare_payload <- function(...) {
   # FIXME: don't allow unnamed lists e.g. prepare_paylaod(list(foo = 12, bar = 45))
   if (any(names(c(...)) == "")) {
     stop("All elements must be named!")
   }
-
-  user_inputs <- list(...)
 
   # TODO: check that user_inputs contains only valid names
   # according to Sentry's documentation
@@ -188,21 +188,24 @@ prepare_payload <- function(...) {
     # Sentry will treat the timezone as UTC/GMT by default
     timestamp = strftime(as.POSIXlt(Sys.time(), tz = "GMT"), "%Y-%m-%dT%H:%M:%SZ"),
     event_id = uuid,
-    modules = packages
+    modules = packages,
+    ...
   )
 
-  defaults_plus_userfields <- utils::modifyList(system_parameters, user_inputs)
+  if (!is.null(.sentry_env$payload_skeleton)) {
+    with_all_fields <- utils::modifyList(
+      .sentry_env$payload_skeleton,
+      system_parameters
+    )
 
-  with_all_fields <- utils::modifyList(
-    .sentry_env$payload_skeleton,
-    defaults_plus_userfields
-  )
-
-  without_nulls <- rm_null_obs(with_all_fields)
+    without_nulls <- rm_null_obs(with_all_fields)
+  } else {
+    without_nulls <- rm_null_obs(system_parameters)
+  }
 
   # rm_null_obs transforms everything into a list, and we need
   # the stacktrace as a data.frame/tibble
-  without_nulls$exception$stacktrace <- with_all_fields$exception$stacktrace
+  without_nulls$exception$stacktrace <- system_parameters$exception$stacktrace
 
   payload <- jsonlite::toJSON(without_nulls,
     auto_unbox = TRUE,

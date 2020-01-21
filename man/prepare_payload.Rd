@@ -16,6 +16,8 @@ a JSON character string
 Prepare JSON payload for Sentry
 }
 \examples{
+\dontrun{
 prepare_payload() # return only the core parameters
-prepare_payload(tags = list(foo = 123, bar = "meh")) # add one tag
+prepare_payload(tags = list(foo = 123, bar = "meh")) # add tags
+}
 }
