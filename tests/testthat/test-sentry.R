@@ -58,8 +58,8 @@ test_that("configuration is properly set", {
   )
   expect_false(is_sentry_configured())
 
-  sentry_env$public_key <- "1234"
-  sentry_env$host <- "sentry.io"
+  .sentry_env$public_key <- "1234"
+  .sentry_env$host <- "sentry.io"
 
   expect_message(
     is_sentry_configured(),
@@ -68,11 +68,11 @@ test_that("configuration is properly set", {
   expect_false(is_sentry_configured())
 
 
-  sentry_env$project_id <- "1"
+  .sentry_env$project_id <- "1"
 
   expect_true(is_sentry_configured())
 
-  rm(list = ls(envir = sentry_env), envir = sentry_env)
+  rm(list = ls(envir = .sentry_env), envir = .sentry_env)
 
 
   configure_sentry("https://1234@sentry.io/1")
@@ -87,26 +87,26 @@ test_that("configuration is properly set", {
 
   expect_true(all(fields))
 
-  rm(list = ls(envir = sentry_env), envir = sentry_env)
+  rm(list = ls(envir = .sentry_env), envir = .sentry_env)
 })
 
 test_that("we build the correct response url", {
-  sentry_env$protocol <- "https"
-  sentry_env$host <- "sentry.io"
-  sentry_env$project_id <- "1"
+  .sentry_env$protocol <- "https"
+  .sentry_env$host <- "sentry.io"
+  .sentry_env$project_id <- "1"
 
   expect_equal(sentry_url(), "https://sentry.io/api/1/store/")
 
-  rm(list = ls(envir = sentry_env), envir = sentry_env)
+  rm(list = ls(envir = .sentry_env), envir = .sentry_env)
 })
 
 test_that("we build the correct headers", {
   # without deprecated secret key
-  sentry_env$public_key <- "1234"
-  sentry_env$secret_key <- NA
-  sentry_env$pkg_version <- packageVersion("sentryR")
-  sentry_env$as.integer <- as.integer
-  sentry_env$Sys.time <- Sys.time
+  .sentry_env$public_key <- "1234"
+  .sentry_env$secret_key <- NA
+  .sentry_env$pkg_version <- packageVersion("sentryR")
+  .sentry_env$as.integer <- as.integer
+  .sentry_env$Sys.time <- Sys.time
 
   expect_equal(
     sentry_headers(),
@@ -114,13 +114,13 @@ test_that("we build the correct headers", {
   )
 
   # with the deprecated secret key
-  sentry_env$secret_key <- "5678"
+  .sentry_env$secret_key <- "5678"
   expect_equal(
     sentry_headers(),
     c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,sentry_client=sentryR/{packageVersion('sentryR')},sentry_timestamp={as.integer(Sys.time())},sentry_key=1234,sentry_secret=5678"))
   )
 
-  rm(list = ls(envir = sentry_env), envir = sentry_env)
+  rm(list = ls(envir = .sentry_env), envir = .sentry_env)
 })
 
 test_that("capture_exception complains", {
@@ -134,7 +134,7 @@ test_that("capture_exception complains", {
     .env = "SentryR"
   )
 
-  rm(list = ls(envir = sentry_env), envir = sentry_env)
+  rm(list = ls(envir = .sentry_env), envir = .sentry_env)
 })
 
 test_that("inform about Sentry responses", {
@@ -160,5 +160,5 @@ test_that("inform about Sentry responses", {
   )
 
 
-  rm(list = ls(envir = sentry_env), envir = sentry_env)
+  rm(list = ls(envir = .sentry_env), envir = .sentry_env)
 })

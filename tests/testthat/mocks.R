@@ -17,10 +17,10 @@ error_wcalls <- simpleError("Reverse polarisation!!",
 )
 
 # mock sentry DSN
-sentry_env <- new.env()
-sentry_env$public_key <- "1234"
-sentry_env$host <- "sentry.io"
-sentry_env$project_id <- "1"
+.sentry_env <- new.env()
+.sentry_env$public_key <- "1234"
+.sentry_env$host <- "sentry.io"
+.sentry_env$project_id <- "1"
 
 # mock response for sentry.configured
 not_configured <- mockery::mock(FALSE)

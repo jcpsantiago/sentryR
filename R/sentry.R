@@ -52,7 +52,7 @@ parse_dsn <- function(dsn) {
 #' @param env the environment name, such as production or staging (optional). Default: NULL
 #' @param ... named lists as extra parameters for the Sentry payload
 #'
-#' @return populates the sentry_env environment with character strings
+#' @return populates the .sentry_env environment with character strings
 #'
 #' @export
 #'
@@ -82,12 +82,9 @@ configure_sentry <- function(dsn, appname = NULL, appversion = NULL,
     ...
   )
 
-  sentry_env$payload_skeleton <- utils::modifyList(
-    sentry_env$payload_skeleton,
-    user_vars
-  )
+  .sentry_env$payload_skeleton <- user_vars
 
-  invisible(list2env(dsn_vars, sentry_env))
+  invisible(list2env(dsn_vars, .sentry_env))
 }
 
 
@@ -105,13 +102,13 @@ configure_sentry <- function(dsn, appname = NULL, appversion = NULL,
 is_sentry_configured <- function() {
   mandatory_fields <- sapply(
     c("public_key", "host", "project_id"),
-    function(x) exists(x, envir = sentry_env)
+    function(x) exists(x, envir = .sentry_env)
   )
 
   all_fields_present <- all(mandatory_fields) && all(!is.na(c(
-    sentry_env$public_key,
-    sentry_env$host,
-    sentry_env$project_id
+    .sentry_env$public_key,
+    .sentry_env$host,
+    .sentry_env$project_id
   )))
 
   if (!all_fields_present) {
@@ -159,32 +156,52 @@ prepare_payload <- function(...) {
     x = uuid::UUIDgenerate(use.time = TRUE)
   )
 
-  system_overwrites <- list(
+  installed_pkgs_df <- as.data.frame(utils::installed.packages(),
+                                     stringsAsFactors = FALSE
+  )
+  versions <- installed_pkgs_df$Version
+  names(versions) <- installed_pkgs_df$Package
+  packages <- as.list(versions)
+
+  sys_info <- Sys.info()
+
+  system_parameters <- list(
+    logger = "R",
+    platform = "R", # Sentry will ignore this for now
+    sdk = list(
+      name = "SentryR",
+      version = .sentry_env$pkg_version
+    ),
+    contexts = list(
+      os = list(
+        name = sys_info[["sysname"]],
+        version = sys_info[["release"]],
+        kernel_version = sys_info[["version"]]
+      ),
+      runtime = list(
+        version = glue::glue("{R.version$major}.{R.version$minor}"),
+        type = "runtime",
+        name = "R",
+        build = R.version$version.string
+      )
+    ),
     # Sentry will treat the timezone as UTC/GMT by default
     timestamp = strftime(as.POSIXlt(Sys.time(), tz = "GMT"), "%Y-%m-%dT%H:%M:%SZ"),
-    event_id = uuid
+    event_id = uuid,
+    modules = packages
   )
 
-  defaults_plus_userfields <- utils::modifyList(system_overwrites, user_inputs)
+  defaults_plus_userfields <- utils::modifyList(system_parameters, user_inputs)
 
   with_all_fields <- utils::modifyList(
-    sentry_env$payload_skeleton,
+    .sentry_env$payload_skeleton,
     defaults_plus_userfields
   )
 
+  without_nulls <- rm_null_obs(with_all_fields)
 
-  # TODO: pull this into utils.R
-
-  # https://stackoverflow.com/questions/26539441/remove-null-elements-from-list-of-lists
-  is.NullOb <- function(x) is.null(x) | all(sapply(x, is.null))
-
-  rmNullObs <- function(x) {
-    x <- Filter(Negate(is.NullOb), x)
-    lapply(x, function(x) if (is.list(x)) rmNullObs(x) else x)
-  }
-
-  without_nulls <- rmNullObs(with_all_fields)
-
+  # rm_null_obs transforms everything into a list, and we need
+  # the stacktrace as a data.frame/tibble
   without_nulls$exception$stacktrace <- with_all_fields$exception$stacktrace
 
   payload <- jsonlite::toJSON(without_nulls,
@@ -299,7 +316,7 @@ capture_exception <- function(error, ..., .level = "error") {
 #'
 #' @return a character string
 sentry_url <- function() {
-  glue::glue("{protocol}://{host}/api/{project_id}/store/", .envir = sentry_env)
+  glue::glue("{protocol}://{host}/api/{project_id}/store/", .envir = .sentry_env)
 }
 
 
@@ -309,7 +326,7 @@ sentry_url <- function() {
 #'
 #' @return a character vector
 sentry_headers <- function() {
-  if (!is.na(sentry_env$secret_key)) {
+  if (!is.na(.sentry_env$secret_key)) {
     # looks nicer, but the \n could create some issues, so we remove them
     # just in case
     c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,
@@ -317,7 +334,7 @@ sentry_headers <- function() {
                                    sentry_timestamp={as.integer(Sys.time())},
                                    sentry_key={public_key},
                                    sentry_secret={secret_key}",
-      .envir = sentry_env
+      .envir = .sentry_env
     ) %>%
       gsub("[\r\n]", "", .))
   } else {
@@ -325,7 +342,7 @@ sentry_headers <- function() {
                                    sentry_client=sentryR/{pkg_version},
                                    sentry_timestamp={as.integer(Sys.time())},
                                    sentry_key={public_key}",
-      .envir = sentry_env
+      .envir = .sentry_env
     ) %>%
       gsub("[\r\n]", "", .))
   }

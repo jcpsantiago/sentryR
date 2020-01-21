@@ -18,7 +18,7 @@ configure_sentry(dsn, appname = NULL, appversion = NULL, env = NULL, ...)
 \item{...}{named lists as extra parameters for the Sentry payload}
 }
 \value{
-populates the sentry_env environment with character strings
+populates the .sentry_env environment with character strings
 }
 \description{
 Configure Sentry

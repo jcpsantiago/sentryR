@@ -87,10 +87,10 @@ calls_to_stacktrace <- function(calls) {
         start_line <- ifelse(start_line < 0, 1, start_line)
 
         if (!is.null(file$original)) {
-          return(file$original$lines[start_line:line])
+          return(file$original$lines[start_line:(line - 1)])
         }
 
-        return(file$lines[start_line:line])
+        return(file$lines[start_line:(line - 1)])
       }
       return(NA_character_)
     }, srcfiles, lineno),
