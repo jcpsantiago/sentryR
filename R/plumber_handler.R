@@ -14,7 +14,7 @@ capture_function_calls <- function(error) {
 #' @return a function
 #' @export
 with_captured_calls <- function(z) {
-  f <- function(...){
+  f <- function(...) {
     return(withCallingHandlers(z(...), error = capture_function_calls))
   }
   return(f)
@@ -41,7 +41,8 @@ with_captured_calls <- function(z) {
 sentry_error_handler <- function(req, res, error, ...) {
   if (!is.null(req$postBody) && length(req$postBody) > 0) {
     req_body <- list(
-      data = lapply(jsonlite::fromJSON(req$postBody), function(x) utils::head(x, 10)))
+      data = lapply(jsonlite::fromJSON(req$postBody), function(x) utils::head(x, 10))
+    )
   } else {
     req_body <- NULL
   }

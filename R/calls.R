@@ -10,7 +10,6 @@
 #' calls_to_stacktrace(sys.calls())
 #' }
 calls_to_stacktrace <- function(calls) {
-
   srcrefs <- lapply(calls, function(call) attr(call, "srcref", exact = TRUE))
   srcfiles <- lapply(srcrefs, function(ref) {
     if (!is.null(ref)) {
@@ -18,29 +17,49 @@ calls_to_stacktrace <- function(calls) {
     }
   })
 
+  funs <- sapply(calls, function(call) {
+    if (is.function(call[[1]])) {
+      "<Anonymous>"
+    } else if (inherits(call[[1]], "call")) {
+      paste0(format(call[[1]]), collapse = " ")
+    } else if (typeof(call[[1]]) == "promise") {
+      "<Promise>"
+    } else {
+      paste0(as.character(call[[1]]), collapse = " ")
+    }
+  })
+
+  # calls to stop, eval, etc are not informative in the stacktrace,
+  # so we remove them here
+  to_keep <- !(funs %in% c(
+    "stop", "eval",
+    "withCallingHandlers",
+    "withVisible"
+  ))
+
+  names(srcrefs) <- funs
+  names(srcfiles) <- funs
+
+  srcrefs <- srcrefs[to_keep]
+
+  srcfiles <- srcfiles[to_keep]
+
+  full_function_call <- as.character(calls)
+  names(full_function_call) <- funs
+  full_function_call <- full_function_call[to_keep]
+
+  # TODO: Offset the lines to the function definition, not the function call
   df <- tibble::tibble(
-    `function` = sapply(calls, function(call) {
-      if (is.function(call[[1]])) {
-        "<Anonymous>"
-      } else if (inherits(call[[1]], "call")) {
-        paste0(format(call[[1]]), collapse = " ")
-      } else if (typeof(call[[1]]) == "promise") {
-        "<Promise>"
-      } else {
-        paste0(as.character(call[[1]]), collapse = " ")
-      }
-    }),
-    raw_function = as.character(calls),
+    `function` = funs[to_keep],
+    raw_function = full_function_call,
     module = vapply(srcfiles, function(file) {
       if (!is.null(file$original)) {
-        print(file)
         return(basename(file$original$filename))
       }
       return(NA_character_)
     }, character(1)),
     abs_path = vapply(srcfiles, function(file) {
       if (!is.null(file)) {
-        print(file)
         return(file$filename)
       }
       return(NA_character_)
@@ -48,7 +67,6 @@ calls_to_stacktrace <- function(calls) {
     filename = vapply(abs_path, function(path) basename(path), character(1)),
     lineno = vapply(srcrefs, function(ref) {
       if (!is.null(ref)) {
-        print(ref)
         return(ref[[1L]])
       }
       return(NA_integer_)
@@ -78,7 +96,6 @@ calls_to_stacktrace <- function(calls) {
     }, srcfiles, lineno),
     post_context = mapply(function(file, line) {
       if (!is.null(file)) {
-
         if (!is.null(file$original)) {
           return(file$original$lines[(line + 1):(line + 5)])
         }

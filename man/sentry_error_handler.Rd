@@ -25,7 +25,7 @@ Error handler with Sentry reporting
 \dontrun{
 sentryR::configure_sentry(Sys.getenv("SENTRY_DSN"))
 pr <- plumber::plumb("example_plumber.R")
-pr$setErrorHandler(sentryR::plumber_error_handler)
+pr$setErrorHandler(sentryR::sentry_error_handler)
 pr$run()
 }
 }

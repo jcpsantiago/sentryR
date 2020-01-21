@@ -20,18 +20,24 @@ parse_dsn <- function(dsn) {
   )
 
   if (is.na(dsn_fields$dsn)) {
-    stop("Invalid DSN! Expected format is 'https://<public_key>@<host>/<project_id>' ",
-         "but received '", dsn, "' instead.")
+    stop(
+      "Invalid DSN! Expected format is 'https://<public_key>@<host>/<project_id>' ",
+      "but received '", dsn, "' instead."
+    )
   }
 
   mandatory_fields_present <- sapply(
     c("public_key", "host", "project_id"),
-    function(x) !is.na(dsn_fields[[x]]) & dsn_fields[[x]] != "")
+    function(x) !is.na(dsn_fields[[x]]) & dsn_fields[[x]] != ""
+  )
 
   if (!all(mandatory_fields_present)) {
-    stop("Expected fields 'https://<public_key>@<host>/<project_id>', but can't find ",
-             paste(names(mandatory_fields_present)[!mandatory_fields_present],
-                   collapse = ", "), " in '", dsn, "'. Please check your DSN.")
+    stop(
+      "Expected fields 'https://<public_key>@<host>/<project_id>', but can't find ",
+      paste(names(mandatory_fields_present)[!mandatory_fields_present],
+        collapse = ", "
+      ), " in '", dsn, "'. Please check your DSN."
+    )
   }
 
   return(dsn_fields)
@@ -43,6 +49,8 @@ parse_dsn <- function(dsn) {
 #' @param dsn the DSN of a Sentry project.
 #' @param appname name of your application (optional). Default: NULL
 #' @param appversion version of your application (optional). Default: NULL
+#' @param env the environment name, such as production or staging (optional). Default: NULL
+#' @param ... named lists as extra parameters for the Sentry payload
 #'
 #' @return populates the sentry_env environment with character strings
 #'
@@ -53,28 +61,33 @@ parse_dsn <- function(dsn) {
 #' configure_sentry("https://12345abcddbc45e49773bb1ca8d9c533@sentry.io/1234567")
 #' sentry_env$host # sentry.io
 #' }
-configure_sentry <- function(dsn, appname = NULL, appversion = NULL) {
-
+configure_sentry <- function(dsn, appname = NULL, appversion = NULL,
+                             env = NULL, ...) {
   if (length(dsn) > 1) {
     stop("Expected one dsn, but received ", length(dsn), " instead.")
   }
 
-  sentry_vars <- parse_dsn(dsn)
+  # TODO: more happpy pathing here
 
-  if (any(!is.null(c(appname, appversion)))) {
-    app_context <- list(
+  dsn_vars <- parse_dsn(dsn)
+
+  user_vars <- list(
+    environment = env,
+    contexts = list(
       app = list(
         app_name = appname,
-        app_version = as.character(appversion)
+        app_version = appversion
       )
-    )
-    app_context[sapply(app_context, is.null)] <- NULL
-    context <- list(context = append(sentry_env$context, app_context))
+    ),
+    ...
+  )
 
-    sentry_vars <- append(sentry_vars, context)
-  }
+  sentry_env$payload_skeleton <- utils::modifyList(
+    sentry_env$payload_skeleton,
+    user_vars
+  )
 
-  invisible(list2env(sentry_vars, sentry_env))
+  invisible(list2env(dsn_vars, sentry_env))
 }
 
 
@@ -90,22 +103,26 @@ configure_sentry <- function(dsn, appname = NULL, appversion = NULL) {
 #' is_sentry_configured() # TRUE
 #' }
 is_sentry_configured <- function() {
-
   mandatory_fields <- sapply(
     c("public_key", "host", "project_id"),
-    function(x) exists(x, envir = sentry_env))
+    function(x) exists(x, envir = sentry_env)
+  )
 
   all_fields_present <- all(mandatory_fields) && all(!is.na(c(
-                          sentry_env$public_key,
-                          sentry_env$host,
-                          sentry_env$project_id
-                        )))
+    sentry_env$public_key,
+    sentry_env$host,
+    sentry_env$project_id
+  )))
 
   if (!all_fields_present) {
     message(
-      paste0("Expected public_key, host and project_id to be present but can't find ",
-             paste(names(mandatory_fields)[!mandatory_fields],
-                   collapse = ", "), "."))
+      paste0(
+        "Expected public_key, host and project_id to be present but can't find ",
+        paste(names(mandatory_fields)[!mandatory_fields],
+          collapse = ", "
+        ), "."
+      )
+    )
 
     return(FALSE)
   }
@@ -133,36 +150,48 @@ prepare_payload <- function(...) {
   user_inputs <- list(...)
 
   # TODO: check that user_inputs contains only valid names
-  # according to Sentry's documentation, and NULLify those not overwriteable
+  # according to Sentry's documentation
 
   # Hexadecimal string representing a uuid4 value.
   # The length is exactly 32 characters. Dashes are not allowed.
-  uuid <- gsub(pattern = "-", replacement = "",
-               x = uuid::UUIDgenerate(use.time = TRUE))
-
-  defaults <- list(
-    # Sentry will treat the timezone as UTC/GMT by default
-    timestamp = strftime(as.POSIXlt(Sys.time(), tz = "GMT"), "%Y-%m-%dT%H:%M:%SZ"),
-    logger = ifelse(is.null(user_inputs$logger), "R", user_inputs$logger),
-    platform = "R", # Sentry will ignore this for now
-    sdk = list(
-      name = "SentryR",
-      version = as.character(utils::packageVersion("SentryR"))),
-    event_id = uuid,
-    modules = sentry_env$modules,
-    contexts = sentry_env$context
+  uuid <- gsub(
+    pattern = "-", replacement = "",
+    x = uuid::UUIDgenerate(use.time = TRUE)
   )
 
-  if ("logger" %in% names(user_inputs)) {
-    user_inputs$logger <- NULL
+  system_overwrites <- list(
+    # Sentry will treat the timezone as UTC/GMT by default
+    timestamp = strftime(as.POSIXlt(Sys.time(), tz = "GMT"), "%Y-%m-%dT%H:%M:%SZ"),
+    event_id = uuid
+  )
+
+  defaults_plus_userfields <- utils::modifyList(system_overwrites, user_inputs)
+
+  with_all_fields <- utils::modifyList(
+    sentry_env$payload_skeleton,
+    defaults_plus_userfields
+  )
+
+
+  # TODO: pull this into utils.R
+
+  # https://stackoverflow.com/questions/26539441/remove-null-elements-from-list-of-lists
+  is.NullOb <- function(x) is.null(x) | all(sapply(x, is.null))
+
+  rmNullObs <- function(x) {
+    x <- Filter(Negate(is.NullOb), x)
+    lapply(x, function(x) if (is.list(x)) rmNullObs(x) else x)
   }
 
-  defaults_plus_userfields <- append(defaults, user_inputs)
+  without_nulls <- rmNullObs(with_all_fields)
 
-  payload <- jsonlite::toJSON(defaults_plus_userfields,
-                              auto_unbox = TRUE,
-                              null = 'null',
-                              na = 'null')
+  without_nulls$exception$stacktrace <- with_all_fields$exception$stacktrace
+
+  payload <- jsonlite::toJSON(without_nulls,
+    auto_unbox = TRUE,
+    null = "null",
+    na = "null"
+  )
 
   return(payload)
 }
@@ -180,7 +209,6 @@ prepare_payload <- function(...) {
 #' capture(message = "oh hai there!") # send message to sentry
 #' }
 capture <- function(...) {
-
   if (!is_sentry_configured()) {
     stop("Sentry is not configured!")
   }

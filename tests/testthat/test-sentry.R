@@ -4,26 +4,37 @@ test_that("parsing the dsn works", {
   expect_error(parse_dsn(888))
 
   test_dsn <- "https://1234@sentry.io"
-  expect_error(parse_dsn(test_dsn),
-               paste0("Invalid DSN! Expected format is 'https://<public_key>@<host>/<project_id>' but received ",
-                      "'https://1234@sentry\\.io' instead\\."))
+  expect_error(
+    parse_dsn(test_dsn),
+    paste0(
+      "Invalid DSN! Expected format is 'https://<public_key>@<host>/<project_id>' but received ",
+      "'https://1234@sentry\\.io' instead\\."
+    )
+  )
 
   test_dsn <- "https://1234@sentry.io/"
-  expect_error(parse_dsn(test_dsn),
-               paste0("Expected fields 'https://<public_key>@<host>/<project_id>', ",
-                      "but can't find project_id in 'https://1234@sentry\\.io/'",
-                      "\\. Please check your DSN\\."))
+  expect_error(
+    parse_dsn(test_dsn),
+    paste0(
+      "Expected fields 'https://<public_key>@<host>/<project_id>', ",
+      "but can't find project_id in 'https://1234@sentry\\.io/'",
+      "\\. Please check your DSN\\."
+    )
+  )
 
   test_dsn <- "https://1234@sentry.io/1"
   expect_equal(
     names(parse_dsn(test_dsn)),
     c("dsn", "protocol", "public_key", "ignore", "secret_key", "host", "project_id")
   )
-  expect_equal(parse_dsn(test_dsn),
-               list(dsn = test_dsn, protocol = "https", public_key = "1234",
-                    ignore = NA_character_, secret_key = NA_character_,
-                    host = "sentry.io", project_id = "1")
-               )
+  expect_equal(
+    parse_dsn(test_dsn),
+    list(
+      dsn = test_dsn, protocol = "https", public_key = "1234",
+      ignore = NA_character_, secret_key = NA_character_,
+      host = "sentry.io", project_id = "1"
+    )
+  )
 })
 
 test_that("setting configuration works", {
@@ -41,16 +52,19 @@ test_that("builds payload correctly", {
 })
 
 test_that("configuration is properly set", {
-
-  expect_message(is_sentry_configured(),
-                 "Expected public_key, host and project_id to be present but can't find public_key, host, project_id\\.")
+  expect_message(
+    is_sentry_configured(),
+    "Expected public_key, host and project_id to be present but can't find public_key, host, project_id\\."
+  )
   expect_false(is_sentry_configured())
 
   sentry_env$public_key <- "1234"
   sentry_env$host <- "sentry.io"
 
-  expect_message(is_sentry_configured(),
-                 "Expected public_key, host and project_id to be present but can't find project_id\\.")
+  expect_message(
+    is_sentry_configured(),
+    "Expected public_key, host and project_id to be present but can't find project_id\\."
+  )
   expect_false(is_sentry_configured())
 
 
@@ -64,9 +78,12 @@ test_that("configuration is properly set", {
   configure_sentry("https://1234@sentry.io/1")
 
   fields <- sapply(
-    c("dsn", "protocol", "public_key", "ignore",
-      "secret_key", "host", "project_id"),
-    function(x) exists(x, envir = sentry_env))
+    c(
+      "dsn", "protocol", "public_key", "ignore",
+      "secret_key", "host", "project_id"
+    ),
+    function(x) exists(x, envir = sentry_env)
+  )
 
   expect_true(all(fields))
 
@@ -87,17 +104,21 @@ test_that("we build the correct headers", {
   # without deprecated secret key
   sentry_env$public_key <- "1234"
   sentry_env$secret_key <- NA
-  sentry_env$pkg_version <- packageVersion('sentryR')
+  sentry_env$pkg_version <- packageVersion("sentryR")
   sentry_env$as.integer <- as.integer
   sentry_env$Sys.time <- Sys.time
 
-  expect_equal(sentry_headers(),
-               c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,sentry_client=sentryR/{packageVersion('sentryR')},sentry_timestamp={as.integer(Sys.time())},sentry_key=1234")))
+  expect_equal(
+    sentry_headers(),
+    c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,sentry_client=sentryR/{packageVersion('sentryR')},sentry_timestamp={as.integer(Sys.time())},sentry_key=1234"))
+  )
 
   # with the deprecated secret key
   sentry_env$secret_key <- "5678"
-  expect_equal(sentry_headers(),
-               c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,sentry_client=sentryR/{packageVersion('sentryR')},sentry_timestamp={as.integer(Sys.time())},sentry_key=1234,sentry_secret=5678")))
+  expect_equal(
+    sentry_headers(),
+    c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,sentry_client=sentryR/{packageVersion('sentryR')},sentry_timestamp={as.integer(Sys.time())},sentry_key=1234,sentry_secret=5678"))
+  )
 
   rm(list = ls(envir = sentry_env), envir = sentry_env)
 })
@@ -105,9 +126,13 @@ test_that("we build the correct headers", {
 test_that("capture_exception complains", {
   source(test_path("mocks.R"))
 
-  with_mock(is_sentry_configured = not_configured, {
-    expect_warning(capture_exception(error_nocalls))
-  }, .env = "SentryR")
+  with_mock(
+    is_sentry_configured = not_configured,
+    {
+      expect_warning(capture_exception(error_nocalls))
+    },
+    .env = "SentryR"
+  )
 
   rm(list = ls(envir = sentry_env), envir = sentry_env)
 })
@@ -119,16 +144,21 @@ test_that("inform about Sentry responses", {
   mockery::stub(capture_exception, "httr::POST", "foobar")
   mockery::stub(capture_exception, "httr::status_code", 200)
 
-  expect_message(capture_exception(error_nocalls),
-                 "Error successfully sent to Sentry, check your project for more details.\n")
+  expect_message(
+    capture_exception(error_nocalls),
+    "Error successfully sent to Sentry, check your project for more details.\n"
+  )
 
   mockery::stub(capture_exception, "httr::status_code", 400)
   mockery::stub(capture_exception, "httr::content", " error from sentry")
-  expect_warning(capture_exception(error_nocalls),
-                 paste("Error connecting to Sentry:",
-                       "error from sentry"))
+  expect_warning(
+    capture_exception(error_nocalls),
+    paste(
+      "Error connecting to Sentry:",
+      "error from sentry"
+    )
+  )
 
 
   rm(list = ls(envir = sentry_env), envir = sentry_env)
 })
-
