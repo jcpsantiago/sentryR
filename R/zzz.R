@@ -2,7 +2,7 @@
 # pre-calculates a couple of re-used values
 # plays well with the glue package too
 # TODO: do we really need to use emptyenv() here?
-.sentry_env <- new.env(parent = emptyenv())
+.sentry_env <- new.env()
 
 pkg_version <- as.character(utils::packageVersion("SentryR"))
 
