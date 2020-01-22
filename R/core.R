@@ -339,7 +339,7 @@ sentry_headers <- function() {
   if (!is.na(.sentry_env$secret_key)) {
     c("X-Sentry-Auth" = sprintf(
         "Sentry sentry_version=7,sentry_client=sentryR/%s,sentry_timestamp=%s,sentry_key=%s,sentry_secret=%s",
-        utils::packageVersion("SentryR"),
+        .sentry_env$pkg_version,
         as.integer(Sys.time()),
         .sentry_env$public_key,
         .sentry_env$secret_key
@@ -348,7 +348,7 @@ sentry_headers <- function() {
   } else {
     c("X-Sentry-Auth" = sprintf(
         "Sentry sentry_version=7,sentry_client=sentryR/%s,sentry_timestamp=%s,sentry_key=%s",
-        utils::packageVersion("SentryR"),
+        .sentry_env$pkg_version,
         as.integer(Sys.time()),
         .sentry_env$public_key
       )

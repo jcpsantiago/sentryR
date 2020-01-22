@@ -104,6 +104,7 @@ test_that("we build the correct headers", {
   # without deprecated secret key
   .sentry_env$public_key <- "1234"
   .sentry_env$secret_key <- NA
+  .sentry_env$pkg_version <- "8.8.8"
 
   expect_match(
     sentry_headers()[[1]],
