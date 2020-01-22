@@ -5,5 +5,5 @@
 \alias{SentryR}
 \title{\code{sentryR} package}
 \description{
-SDK for sentry.io, a cross-platform application monitoring service
+SDK for 'sentry.io', a cross-platform application monitoring service
 }
