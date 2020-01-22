@@ -105,16 +105,16 @@ test_that("we build the correct headers", {
   .sentry_env$public_key <- "1234"
   .sentry_env$secret_key <- NA
 
-  expect_equal(
-    sentry_headers(),
-    c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,sentry_client=sentryR/{packageVersion('sentryR')},sentry_timestamp={as.integer(Sys.time())},sentry_key=1234"))
+  expect_match(
+    sentry_headers()[[1]],
+    "Sentry sentry_version=7,sentry_client=sentryR/.*,sentry_timestamp=.*sentry_key=1234"
   )
 
   # with the deprecated secret key
   .sentry_env$secret_key <- "5678"
-  expect_equal(
-    sentry_headers(),
-    c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,sentry_client=sentryR/{packageVersion('sentryR')},sentry_timestamp={as.integer(Sys.time())},sentry_key=1234,sentry_secret=5678"))
+  expect_match(
+    sentry_headers()[[1]],
+    "Sentry sentry_version=7,sentry_client=sentryR/.*,sentry_timestamp=.*sentry_key=1234,sentry_secret=5678"
   )
 
   rm(list = ls(envir = .sentry_env), envir = .sentry_env)
