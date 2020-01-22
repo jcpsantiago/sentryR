@@ -1,6 +1,6 @@
 #' \code{sentryR} package
 #'
-#' SDK for sentry.io, a cross-platform application monitoring service
+#' SDK for 'sentry.io', a cross-platform application monitoring service
 #'
 #' @docType package
 #' @name SentryR
