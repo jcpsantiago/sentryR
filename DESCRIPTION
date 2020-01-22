@@ -1,12 +1,12 @@
 Package: sentryR
 Type: Package
-Title: Send Errors to Sentry
+Title: Send Errors and Messages to Sentry
 Version: 1.0.0
 Authors@R: c(
   person("Joao", "Santiago", email = "santiago@billie.io", role = c("aut", "cre")),
-  person("Daniel", "Kirsch", role = "aut"),
+  person("Daniel", "Kirsch", role = "aut", email = "daniel@billie.io"),
   person("Billie GmbH", role = "cph"))
-Description: Capture errors and send them to a Sentry project.
+Description: Capture errors and send them to a 'Sentry' project.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -14,13 +14,10 @@ URL: https://github.com/ozean12/sentryR
 BugReports: https://github.com/ozean12/sentryR/issues
 RoxygenNote: 7.0.1
 Imports:
-  glue,
-  purrr,
   httr,
   jsonlite,
   stringr,
   stats,
-  magrittr,
   tibble,
   uuid
 Suggests: 

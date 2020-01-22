@@ -157,7 +157,7 @@ prepare_payload <- function(...) {
   )
 
   installed_pkgs_df <- as.data.frame(utils::installed.packages(),
-                                     stringsAsFactors = FALSE
+    stringsAsFactors = FALSE
   )
   versions <- installed_pkgs_df$Version
   names(versions) <- installed_pkgs_df$Package
@@ -179,7 +179,7 @@ prepare_payload <- function(...) {
         kernel_version = sys_info[["version"]]
       ),
       runtime = list(
-        version = glue::glue("{R.version$major}.{R.version$minor}"),
+        version = sprintf("%s.%s", R.version$major, R.version$minor),
         type = "runtime",
         name = "R",
         build = R.version$version.string
@@ -319,7 +319,10 @@ capture_exception <- function(error, ..., .level = "error") {
 #'
 #' @return a character string
 sentry_url <- function() {
-  glue::glue("{protocol}://{host}/api/{project_id}/store/", .envir = .sentry_env)
+  sprintf(
+    "%s://%s/api/%s/store/",
+    .sentry_env$protocol, .sentry_env$host, .sentry_env$project_id
+  )
 }
 
 
@@ -334,23 +337,21 @@ sentry_headers <- function() {
   }
 
   if (!is.na(.sentry_env$secret_key)) {
-    # looks nicer, but the \n could create some issues, so we remove them
-    # just in case
-    c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,
-                                   sentry_client=sentryR/{utils::packageVersion('SentryR')},
-                                   sentry_timestamp={as.integer(Sys.time())},
-                                   sentry_key={public_key},
-                                   sentry_secret={secret_key}",
-      .envir = .sentry_env
-    ) %>%
-      gsub("[\r\n]", "", .))
+    c("X-Sentry-Auth" = sprintf(
+        "Sentry sentry_version=7,sentry_client=sentryR/%s,sentry_timestamp=%s,sentry_key=%s,sentry_secret=%s",
+        utils::packageVersion("SentryR"),
+        as.integer(Sys.time()),
+        .sentry_env$public_key,
+        .sentry_env$secret_key
+      )
+    )
   } else {
-    c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,
-                                   sentry_client=sentryR/{utils::packageVersion('SentryR')},
-                                   sentry_timestamp={as.integer(Sys.time())},
-                                   sentry_key={public_key}",
-      .envir = .sentry_env
-    ) %>%
-      gsub("[\r\n]", "", .))
+    c("X-Sentry-Auth" = sprintf(
+        "Sentry sentry_version=7,sentry_client=sentryR/%s,sentry_timestamp=%s,sentry_key=%s",
+        utils::packageVersion("SentryR"),
+        as.integer(Sys.time()),
+        .sentry_env$public_key
+      )
+    )
   }
 }
