@@ -170,7 +170,7 @@ prepare_payload <- function(...) {
     platform = "R", # Sentry will ignore this for now
     sdk = list(
       name = "SentryR",
-      version = .sentry_env$pkg_version
+      version = packages$sentryR
     ),
     contexts = list(
       os = list(
@@ -255,10 +255,10 @@ capture <- function(...) {
 }
 
 
-#' Report a message
+#' Report a message to Sentry
 #'
 #' @param .message message text
-#' @param ... optional additional named paramters
+#' @param ... optional additional named parameters
 #' @param .level the level of the message. Default: "info"
 #'
 #' @return nothing; sends message to Sentry
@@ -277,7 +277,7 @@ capture_message <- function(.message, ..., .level = "info") {
 #' Report an error or exception object
 #'
 #' @param error an error object
-#' @param ... optional additional named paramters
+#' @param ... optional additional named parameters
 #' @param .level the level of the message. Default: "error"
 #'
 #' @return nothing; sends error to Sentry
@@ -329,11 +329,15 @@ sentry_url <- function() {
 #'
 #' @return a character vector
 sentry_headers <- function() {
+  if (is.null(.sentry_env$secret_key)) {
+    stop("No secret key available. Did you set the DSN with configure_sentry?")
+  }
+
   if (!is.na(.sentry_env$secret_key)) {
     # looks nicer, but the \n could create some issues, so we remove them
     # just in case
     c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,
-                                   sentry_client=sentryR/{pkg_version},
+                                   sentry_client=sentryR/{utils::packageVersion('SentryR')},
                                    sentry_timestamp={as.integer(Sys.time())},
                                    sentry_key={public_key},
                                    sentry_secret={secret_key}",
@@ -342,7 +346,7 @@ sentry_headers <- function() {
       gsub("[\r\n]", "", .))
   } else {
     c("X-Sentry-Auth" = glue::glue("Sentry sentry_version=7,
-                                   sentry_client=sentryR/{pkg_version},
+                                   sentry_client=sentryR/{utils::packageVersion('SentryR')},
                                    sentry_timestamp={as.integer(Sys.time())},
                                    sentry_key={public_key}",
       .envir = .sentry_env
