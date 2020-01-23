@@ -2,4 +2,7 @@
 # pre-calculates a couple of re-used values
 # plays well with the glue package too
 .sentry_env <- new.env()
-.sentry_env$pkg_version <- utils::packageVersion("SentryR")
+# FIXME: should use utils::packageVersion() instead, but that's not working
+# with CRAN because the package is checked before being installed, thus there is
+# no sentryR package to get the version from
+.sentry_env$pkg_version <- "1.0.0"
