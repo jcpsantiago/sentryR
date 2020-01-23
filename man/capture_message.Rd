@@ -4,14 +4,14 @@
 \alias{capture_message}
 \title{Report a message to Sentry}
 \usage{
-capture_message(.message, ..., .level = "info")
+capture_message(message, ..., level = "info")
 }
 \arguments{
-\item{.message}{message text}
+\item{message}{message text}
 
 \item{...}{optional additional named parameters}
 
-\item{.level}{the level of the message. Default: "info"}
+\item{level}{the level of the message. Default: "info"}
 }
 \value{
 nothing; sends message to Sentry

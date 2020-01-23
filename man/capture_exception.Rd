@@ -4,14 +4,14 @@
 \alias{capture_exception}
 \title{Report an error or exception object}
 \usage{
-capture_exception(error, ..., .level = "error")
+capture_exception(error, ..., level = "error")
 }
 \arguments{
 \item{error}{an error object}
 
 \item{...}{optional additional named parameters}
 
-\item{.level}{the level of the message. Default: "error"}
+\item{level}{the level of the message. Default: "error"}
 }
 \value{
 nothing; sends error to Sentry

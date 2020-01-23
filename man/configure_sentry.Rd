@@ -4,16 +4,22 @@
 \alias{configure_sentry}
 \title{Configure Sentry}
 \usage{
-configure_sentry(dsn, appname = NULL, appversion = NULL, env = NULL, ...)
+configure_sentry(
+  dsn,
+  app_name = NULL,
+  app_version = NULL,
+  environment = NULL,
+  ...
+)
 }
 \arguments{
 \item{dsn}{the DSN of a Sentry project.}
 
-\item{appname}{name of your application (optional). Default: NULL}
+\item{app_name}{name of your application (optional). Default: NULL}
 
-\item{appversion}{version of your application (optional). Default: NULL}
+\item{app_version}{version of your application (optional). Default: NULL}
 
-\item{env}{the environment name, such as production or staging (optional). Default: NULL}
+\item{environment}{the environment name, such as production or staging (optional). Default: NULL}
 
 \item{...}{named lists as extra parameters for the Sentry payload}
 }

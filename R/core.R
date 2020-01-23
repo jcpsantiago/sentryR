@@ -47,9 +47,9 @@ parse_dsn <- function(dsn) {
 #' Configure Sentry
 #'
 #' @param dsn the DSN of a Sentry project.
-#' @param appname name of your application (optional). Default: NULL
-#' @param appversion version of your application (optional). Default: NULL
-#' @param env the environment name, such as production or staging (optional). Default: NULL
+#' @param app_name name of your application (optional). Default: NULL
+#' @param app_version version of your application (optional). Default: NULL
+#' @param environment the environment name, such as production or staging (optional). Default: NULL
 #' @param ... named lists as extra parameters for the Sentry payload
 #'
 #' @return populates the .sentry_env environment with character strings
@@ -61,8 +61,8 @@ parse_dsn <- function(dsn) {
 #' configure_sentry("https://12345abcddbc45e49773bb1ca8d9c533@sentry.io/1234567")
 #' sentry_env$host # sentry.io
 #' }
-configure_sentry <- function(dsn, appname = NULL, appversion = NULL,
-                             env = NULL, ...) {
+configure_sentry <- function(dsn, app_name = NULL, app_version = NULL,
+                             environment = NULL, ...) {
   if (length(dsn) > 1) {
     stop("Expected one dsn, but received ", length(dsn), " instead.")
   }
@@ -72,11 +72,11 @@ configure_sentry <- function(dsn, appname = NULL, appversion = NULL,
   dsn_vars <- parse_dsn(dsn)
 
   user_vars <- list(
-    environment = env,
+    environment = environment,
     contexts = list(
       app = list(
-        app_name = appname,
-        app_version = appversion
+        app_name = app_name,
+        app_version = app_version
       )
     ),
     ...
@@ -257,9 +257,9 @@ capture <- function(...) {
 
 #' Report a message to Sentry
 #'
-#' @param .message message text
+#' @param message message text
 #' @param ... optional additional named parameters
-#' @param .level the level of the message. Default: "info"
+#' @param level the level of the message. Default: "info"
 #'
 #' @return nothing; sends message to Sentry
 #' @export
@@ -268,9 +268,9 @@ capture <- function(...) {
 #' \dontrun{
 #' capture_message("this is an important message", logger = "my.logger")
 #' }
-capture_message <- function(.message, ..., .level = "info") {
+capture_message <- function(message, ..., level = "info") {
   # TODO: hello? happy path?
-  capture(message = .message, ..., level = .level)
+  capture(message = message, ..., level = level)
 }
 
 
@@ -278,7 +278,7 @@ capture_message <- function(.message, ..., .level = "info") {
 #'
 #' @param error an error object
 #' @param ... optional additional named parameters
-#' @param .level the level of the message. Default: "error"
+#' @param level the level of the message. Default: "error"
 #'
 #' @return nothing; sends error to Sentry
 #' @export
@@ -287,7 +287,7 @@ capture_message <- function(.message, ..., .level = "info") {
 #' \dontrun{
 #' capture_exception(simpleError("foo"), tags = list(version = "1.0"))
 #' }
-capture_exception <- function(error, ..., .level = "error") {
+capture_exception <- function(error, ..., level = "error") {
   # TODO: hello? happy path?
   # TODO: wrangling the error should be a pure function prepare_error()
 
@@ -309,7 +309,7 @@ capture_exception <- function(error, ..., .level = "error") {
     )
   )
 
-  capture(exception = exception_payload, ..., level = .level)
+  capture(exception = exception_payload, ..., level = level)
 }
 
 
