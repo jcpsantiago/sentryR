@@ -3,7 +3,7 @@
 #' SDK for 'sentry.io', a cross-platform application monitoring service
 #'
 #' @docType package
-#' @name SentryR
+#' @name sentryR
 NULL
 
 ## quiets concerns of R CMD check re: the .'s that appear in pipelines
