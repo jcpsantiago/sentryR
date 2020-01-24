@@ -44,61 +44,31 @@ Refer to the [Sentry docs](https://docs.sentry.io/development/sdk-dev/event-payl
 for a full list of available fields.
 
 By default `sentryR` will send the following fields to Sentry:
-```json
-{
-   "logger":[
-      "R"
-   ],
-   "platform":[
-      "R"
-   ],
-   "sdk":{
-      "name":[
-         "SentryR"
-      ],
-      "version":[
-         "1.0.0"
-      ]
-   },
-   "contexts":{
-      "os":{
-         "name":[
-            "Darwin"
-         ],
-         "version":[
-            "19.2.0"
-         ],
-         "kernel_version":[
-            "Darwin Kernel Version 19.2.0: Sat Nov  9 03:47:04 PST 2019; root:xnu-6153.61.1~20/RELEASE_X86_64"
-         ]
-      },
-      "runtime":{
-         "version":[
-            "3.6.1"
-         ],
-         "type":[
-            "runtime"
-         ],
-         "name":[
-            "R"
-         ],
-         "build":[
-            "R version 3.6.1 (2019-07-05)"
-         ]
-      }
-   },
-   "timestamp":[
-      "2020-01-23T17:41:56Z"
-   ],
-   "event_id":[
-      "768451143e0711eab7b6a683e743921a"
-   ],
-   "modules":{
-      "assertthat":[
-         "0.2.1"
-    ], ...
-  }
-}
+```r
+list(
+  logger = "R",
+  platform = "R", # Sentry will ignore this for now
+  sdk = list(
+    name = "SentryR",
+    version = ...
+  ),
+  contexts = list(
+    os = list(
+      name = ...,
+      version = ...,
+      kernel_version = ...
+    ),
+    runtime = list(
+      version = ...,
+      type = "runtime",
+      name = "R",
+      build = ...
+    )
+  ),
+  timestamp = ...,
+  event_id = ...
+  modules = (installed packages)
+)
 ```
 
 `capture_exception` further adds the `exception` field to the payload.
@@ -136,8 +106,7 @@ You don't need to do any further configuration.
 
 ## Acknowledgements
 
-`sentryR` uses code from [Plumber](https://github.com/rstudio/plumber)
-and [Sentry](https://github.com/rstudio/shiny/) and took inspiration from
+`sentryR` took inspiration from
 [raven-clj](https://github.com/sethtrain/raven-clj) a Clojure interface to Sentry.
 
 ## Contributing
