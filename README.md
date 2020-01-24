@@ -134,7 +134,7 @@ once this is done, Plumber will handle any errors, send them to Sentry using
 `capture_exception`, and respond with status `500` and the error message.
 You don't need to do any further configuration.
 
-## Ackknowledgements
+## Acknowledgements
 
 `sentryR` uses code from [Plumber](https://github.com/rstudio/plumber)
 and [Sentry](https://github.com/rstudio/shiny/) and took inspiration from
