@@ -89,11 +89,14 @@ wrap_error_handler_with_sentry <- function(error_handler = default_error_handler
       request_payload <- append(request_payload, req_body)
     }
 
-    capture_exception(error, request = request_payload,
-                      transaction = req$PATH_INFO, ...)
+    capture_exception(error,
+      request = request_payload,
+      transaction = req$PATH_INFO, ...
+    )
 
     error_handler(req, res, error)
-}}
+  }
+}
 
 
 #' Error handler with Sentry reporting

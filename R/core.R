@@ -207,7 +207,8 @@ prepare_payload <- function(...) {
   # the stacktrace as a data.frame/tibble
   without_nulls$exception$stacktrace <- system_parameters$exception$stacktrace
 
-  payload <- jsonlite::toJSON(without_nulls,
+  payload <- jsonlite::toJSON(
+    without_nulls,
     auto_unbox = TRUE,
     null = "null",
     na = "null"
@@ -338,20 +339,18 @@ sentry_headers <- function() {
 
   if (!is.na(.sentry_env$secret_key)) {
     c("X-Sentry-Auth" = sprintf(
-        "Sentry sentry_version=7,sentry_client=sentryR/%s,sentry_timestamp=%s,sentry_key=%s,sentry_secret=%s",
-        .sentry_env$pkg_version,
-        as.integer(Sys.time()),
-        .sentry_env$public_key,
-        .sentry_env$secret_key
-      )
-    )
+      "Sentry sentry_version=7,sentry_client=sentryR/%s,sentry_timestamp=%s,sentry_key=%s,sentry_secret=%s",
+      .sentry_env$pkg_version,
+      as.integer(Sys.time()),
+      .sentry_env$public_key,
+      .sentry_env$secret_key
+    ))
   } else {
     c("X-Sentry-Auth" = sprintf(
-        "Sentry sentry_version=7,sentry_client=sentryR/%s,sentry_timestamp=%s,sentry_key=%s",
-        .sentry_env$pkg_version,
-        as.integer(Sys.time()),
-        .sentry_env$public_key
-      )
-    )
+      "Sentry sentry_version=7,sentry_client=sentryR/%s,sentry_timestamp=%s,sentry_key=%s",
+      .sentry_env$pkg_version,
+      as.integer(Sys.time()),
+      .sentry_env$public_key
+    ))
   }
 }
