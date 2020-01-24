@@ -29,12 +29,12 @@ calls_to_stacktrace <- function(calls) {
     }
   })
 
-  # calls to stop, eval, etc are not informative in the stacktrace,
-  # so we remove them here
+  # calls to stop, h and internal calls to tryCatch etc are not
+  # informative in the stacktrace, so we remove them here
+  # similar to https://github.com/rstudio/shiny/blob/master/R/conditions.R#L399
   to_keep <- !(funs %in% c(
-    "stop", "eval",
-    "withCallingHandlers",
-    "withVisible"
+    "stop", ".handleSimpleError", "h",
+    "doTryCatch", "tryCatchList", "tryCatchOne"
   ))
 
   names(srcrefs) <- funs

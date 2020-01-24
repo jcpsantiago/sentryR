@@ -2,7 +2,7 @@
 #'
 #' @param error error object
 capture_function_calls <- function(error) {
-  error$function_calls <- sys.calls()[!prune_stack_trace(sys.parents())]
+  error$function_calls <- sys.calls()
   signalCondition(error)
 }
 
@@ -67,7 +67,8 @@ sentry_error_handler <- function(req, res, error, ...) {
     request_payload <- append(request_payload, req_body)
   }
 
-  capture_exception(error, request = request_payload, ...)
+  capture_exception(error, request = request_payload,
+                    transaction = req$PATH_INFO, ...)
 
   print(error)
 

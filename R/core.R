@@ -294,7 +294,7 @@ capture_exception <- function(error, ..., level = "error") {
   if ("function_calls" %in% names(error)) {
     stacktrace <- calls_to_stacktrace(error$function_calls)
   } else {
-    stacktrace <- calls_to_stacktrace(sys.calls()[!prune_stack_trace(sys.parents())])
+    stacktrace <- calls_to_stacktrace(sys.calls())
   }
 
   error_type <- class(error)[[1]]
