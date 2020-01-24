@@ -5,7 +5,8 @@ Version: 1.0.0
 Authors@R: c(
   person("Joao", "Santiago", email = "santiago@billie.io", role = c("aut", "cre")),
   person("Daniel", "Kirsch", role = "aut", email = "daniel@billie.io"),
-  person("Billie GmbH", role = "cph"))
+  # copyright holders
+  person(family = "Billie GmbH", role = "cph"))
 Description: Capture errors and send them to a 'Sentry' project.
 License: MIT + file LICENSE
 Encoding: UTF-8

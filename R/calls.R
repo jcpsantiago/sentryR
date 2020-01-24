@@ -17,6 +17,7 @@ calls_to_stacktrace <- function(calls) {
     }
   })
 
+  # https://github.com/rstudio/shiny/blob/master/R/conditions.R#L64
   funs <- sapply(calls, function(call) {
     if (is.function(call[[1]])) {
       "<Anonymous>"
