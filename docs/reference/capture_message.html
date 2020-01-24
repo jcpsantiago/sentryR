@@ -92,6 +92,9 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -122,13 +125,13 @@
     <p>Report a message to Sentry</p>
     </div>
 
-    <pre class="usage"><span class='fu'>capture_message</span>(<span class='no'>.message</span>, <span class='no'>...</span>, <span class='kw'>.level</span> <span class='kw'>=</span> <span class='st'>"info"</span>)</pre>
+    <pre class="usage"><span class='fu'>capture_message</span>(<span class='no'>message</span>, <span class='no'>...</span>, <span class='kw'>level</span> <span class='kw'>=</span> <span class='st'>"info"</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>.message</th>
+      <th>message</th>
       <td><p>message text</p></td>
     </tr>
     <tr>
@@ -136,7 +139,7 @@
       <td><p>optional additional named parameters</p></td>
     </tr>
     <tr>
-      <th>.level</th>
+      <th>level</th>
       <td><p>the level of the message. Default: "info"</p></td>
     </tr>
     </table>

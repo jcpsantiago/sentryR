@@ -53,6 +53,9 @@
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
+<li>
+  <a href="news/index.html">Changelog</a>
+</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
@@ -90,38 +93,68 @@
 <div id="using-sentryr" class="section level2">
 <h2 class="hasAnchor">
 <a href="#using-sentryr" class="anchor"></a>Using sentryR</h2>
-<p><code>configure_sentry</code> and <code>capture</code> are the two core functions of <code>sentryR</code>. The first sets up an isolated environment with your Sentry project’s DSN, optionally your app’s name, version and the environment it’s running in, and any additional fields you want to pass on to Sentry as named lists:</p>
+<p><code>configure_sentry</code> and <code>capture</code> are the two core functions of <code>sentryR</code>. The first sets up an isolated environment with your Sentry project’s DSN, optionally your app’s name, version and the environment it’s running in. Both <code>configure_sentry</code> and any of the <code>capture_</code> functions accept additional fields to pass on to Sentry as named lists. <code>NULL</code>ifying a field will remove it.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(sentryR)</a>
 <a class="sourceLine" id="cb2-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw"><a href="reference/configure_sentry.html">configure_sentry</a></span>(<span class="dt">dsn =</span> <span class="kw"><a href="https://rdrr.io/r/base/Sys.getenv.html">Sys.getenv</a></span>(<span class="st">"SENTRY_DSN"</span>),</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">                 <span class="dt">appname =</span> <span class="st">"myapp"</span>, <span class="dt">appversion =</span> <span class="st">"8.8.8"</span>,</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">                 <span class="dt">app_name =</span> <span class="st">"myapp"</span>, <span class="dt">app_version =</span> <span class="st">"8.8.8"</span>,</a>
 <a class="sourceLine" id="cb2-5" data-line-number="5">                 <span class="dt">environment =</span> <span class="kw"><a href="https://rdrr.io/r/base/Sys.getenv.html">Sys.getenv</a></span>(<span class="st">"APP_ENV"</span>),</a>
 <a class="sourceLine" id="cb2-6" data-line-number="6">                 <span class="dt">tags =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">foo =</span> <span class="st">"tag1"</span>, <span class="dt">bar =</span> <span class="st">"tag2"</span>),</a>
 <a class="sourceLine" id="cb2-7" data-line-number="7">                 <span class="dt">runtime =</span> <span class="ot">NULL</span>)</a>
 <a class="sourceLine" id="cb2-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="kw"><a href="reference/capture.html">capture</a></span>(<span class="dt">message =</span> <span class="st">"my message"</span>, <span class="dt">.level =</span> <span class="st">"info"</span>)</a></code></pre></div>
-<p>while the latter builds the payload and sends it to Sentry.</p>
-<p>The package includes two wrappers around <code>capture</code> for convenience: <code>capture_exception</code> and <code>capture_message</code>.</p>
+<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="kw"><a href="reference/capture.html">capture</a></span>(<span class="dt">message =</span> <span class="st">"my message"</span>, <span class="dt">level =</span> <span class="st">"info"</span>)</a></code></pre></div>
+<p>You are encouraged to use the two wrappers around <code>capture</code> included: <code>capture_exception</code>, which handles the error object and then reports the error to Sentry, and <code>capture_message</code> for transmitting messages. Refer to the <a href="https://docs.sentry.io/development/sdk-dev/event-payloads/">Sentry docs</a> for a full list of available fields.</p>
+<p>By default <code>sentryR</code> will send the following fields to Sentry:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">  <span class="dt">logger =</span> <span class="st">"R"</span>,</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">  <span class="dt">platform =</span> <span class="st">"R"</span>, <span class="co"># Sentry will ignore this for now</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">  <span class="dt">sdk =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</a>
+<a class="sourceLine" id="cb3-5" data-line-number="5">    <span class="dt">name =</span> <span class="st">"SentryR"</span>,</a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">    <span class="dt">version =</span> ...</a>
+<a class="sourceLine" id="cb3-7" data-line-number="7">  ),</a>
+<a class="sourceLine" id="cb3-8" data-line-number="8">  <span class="dt">contexts =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</a>
+<a class="sourceLine" id="cb3-9" data-line-number="9">    <span class="dt">os =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</a>
+<a class="sourceLine" id="cb3-10" data-line-number="10">      <span class="dt">name =</span> ...,</a>
+<a class="sourceLine" id="cb3-11" data-line-number="11">      <span class="dt">version =</span> ...,</a>
+<a class="sourceLine" id="cb3-12" data-line-number="12">      <span class="dt">kernel_version =</span> ...</a>
+<a class="sourceLine" id="cb3-13" data-line-number="13">    ),</a>
+<a class="sourceLine" id="cb3-14" data-line-number="14">    <span class="dt">runtime =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</a>
+<a class="sourceLine" id="cb3-15" data-line-number="15">      <span class="dt">version =</span> ...,</a>
+<a class="sourceLine" id="cb3-16" data-line-number="16">      <span class="dt">type =</span> <span class="st">"runtime"</span>,</a>
+<a class="sourceLine" id="cb3-17" data-line-number="17">      <span class="dt">name =</span> <span class="st">"R"</span>,</a>
+<a class="sourceLine" id="cb3-18" data-line-number="18">      <span class="dt">build =</span> ...</a>
+<a class="sourceLine" id="cb3-19" data-line-number="19">    )</a>
+<a class="sourceLine" id="cb3-20" data-line-number="20">  ),</a>
+<a class="sourceLine" id="cb3-21" data-line-number="21">  <span class="dt">timestamp =</span> ...,</a>
+<a class="sourceLine" id="cb3-22" data-line-number="22">  <span class="dt">event_id =</span> ...</a>
+<a class="sourceLine" id="cb3-23" data-line-number="23">  <span class="dt">modules =</span> (installed packages)</a>
+<a class="sourceLine" id="cb3-24" data-line-number="24">)</a></code></pre></div>
+<p><code>capture_exception</code> further adds the <code>exception</code> field to the payload.</p>
 </div>
 <div id="example-with-plumber" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example-with-plumber" class="anchor"></a>Example with Plumber</h2>
 <p>In a Plumber API, besides the initial configuration for Sentry, you’ll also have to set the error handler to <code>sentry_error_handler</code></p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(plumber)</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(sentryR)</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="kw"><a href="reference/configure_sentry.html">configure_sentry</a></span>(<span class="dt">dsn =</span> <span class="kw"><a href="https://rdrr.io/r/base/Sys.getenv.html">Sys.getenv</a></span>(<span class="st">'SENTRY_DSN'</span>), </a>
-<a class="sourceLine" id="cb3-5" data-line-number="5">                 <span class="dt">appname =</span> <span class="st">"myapp"</span>, <span class="dt">appversion =</span> <span class="st">"1.0.0"</span>)</a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb3-7" data-line-number="7">r &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/plumber/man/plumber.html">plumb</a></span>(<span class="st">"R/api.R"</span>)</a>
-<a class="sourceLine" id="cb3-8" data-line-number="8">r<span class="op">$</span><span class="kw">setErrorHandler</span>(sentry_error_handler)</a>
-<a class="sourceLine" id="cb3-9" data-line-number="9">r<span class="op">$</span><span class="kw">run</span>(<span class="dt">host =</span> <span class="st">"0.0.0.0"</span>, <span class="dt">port =</span> <span class="dv">8000</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(plumber)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(sentryR)</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="kw"><a href="reference/configure_sentry.html">configure_sentry</a></span>(<span class="dt">dsn =</span> <span class="kw"><a href="https://rdrr.io/r/base/Sys.getenv.html">Sys.getenv</a></span>(<span class="st">'SENTRY_DSN'</span>), </a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">                 <span class="dt">app_name =</span> <span class="st">"myapp"</span>, <span class="dt">app_version =</span> <span class="st">"1.0.0"</span>)</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">r &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/plumber/man/plumber.html">plumb</a></span>(<span class="st">"R/api.R"</span>)</a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">r<span class="op">$</span><span class="kw">setErrorHandler</span>(sentry_error_handler)</a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">r<span class="op">$</span><span class="kw">run</span>(<span class="dt">host =</span> <span class="st">"0.0.0.0"</span>, <span class="dt">port =</span> <span class="dv">8000</span>)</a></code></pre></div>
 <p>and wrap your endpoint functions with <code>with_captured_calls</code></p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co">#* @get /error</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">api_error &lt;-<span class="st"> </span><span class="kw"><a href="reference/with_captured_calls.html">with_captured_calls</a></span>(<span class="cf">function</span>(res, req){</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">  <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span>(<span class="st">"error"</span>)</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">})</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co">#* @get /error</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">api_error &lt;-<span class="st"> </span><span class="kw"><a href="reference/with_captured_calls.html">with_captured_calls</a></span>(<span class="cf">function</span>(res, req){</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">  <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span>(<span class="st">"error"</span>)</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">})</a></code></pre></div>
 <p>once this is done, Plumber will handle any errors, send them to Sentry using <code>capture_exception</code>, and respond with status <code>500</code> and the error message. You don’t need to do any further configuration.</p>
+</div>
+<div id="acknowledgements" class="section level2">
+<h2 class="hasAnchor">
+<a href="#acknowledgements" class="anchor"></a>Acknowledgements</h2>
+<p><code>sentryR</code> took inspiration from <a href="https://github.com/sethtrain/raven-clj">raven-clj</a> a Clojure interface to Sentry.</p>
 </div>
 <div id="contributing" class="section level2">
 <h2 class="hasAnchor">

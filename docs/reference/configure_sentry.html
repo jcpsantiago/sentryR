@@ -92,6 +92,9 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -122,7 +125,13 @@
     <p>Configure Sentry</p>
     </div>
 
-    <pre class="usage"><span class='fu'>configure_sentry</span>(<span class='no'>dsn</span>, <span class='kw'>appname</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>appversion</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>configure_sentry</span>(
+  <span class='no'>dsn</span>,
+  <span class='kw'>app_name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>app_version</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>environment</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='no'>...</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -132,15 +141,15 @@
       <td><p>the DSN of a Sentry project.</p></td>
     </tr>
     <tr>
-      <th>appname</th>
+      <th>app_name</th>
       <td><p>name of your application (optional). Default: NULL</p></td>
     </tr>
     <tr>
-      <th>appversion</th>
+      <th>app_version</th>
       <td><p>version of your application (optional). Default: NULL</p></td>
     </tr>
     <tr>
-      <th>env</th>
+      <th>environment</th>
       <td><p>the environment name, such as production or staging (optional). Default: NULL</p></td>
     </tr>
     <tr>

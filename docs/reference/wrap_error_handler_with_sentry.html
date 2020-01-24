@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Convert function call to a stack trace — calls_to_stacktrace • sentryR</title>
+<title>Wrap a plumber error handler such that it reports errors to Sentry — wrap_error_handler_with_sentry • sentryR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -42,8 +42,8 @@
 
 
 
-<meta property="og:title" content="Convert function call to a stack trace — calls_to_stacktrace" />
-<meta property="og:description" content="Convert function call to a stack trace" />
+<meta property="og:title" content="Wrap a plumber error handler such that it reports errors to Sentry — wrap_error_handler_with_sentry" />
+<meta property="og:description" content="Wrap a plumber error handler such that it reports errors to Sentry" />
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
 
@@ -116,43 +116,36 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Convert function call to a stack trace</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ozean12/sentryR/blob/master/R/calls.R'><code>R/calls.R</code></a></small>
-    <div class="hidden name"><code>calls_to_stacktrace.Rd</code></div>
+    <h1>Wrap a plumber error handler such that it reports errors to Sentry</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ozean12/sentryR/blob/master/R/plumber_handler.R'><code>R/plumber_handler.R</code></a></small>
+    <div class="hidden name"><code>wrap_error_handler_with_sentry.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Convert function call to a stack trace</p>
+    <p>Wrap a plumber error handler such that it reports errors to Sentry</p>
     </div>
 
-    <pre class="usage"><span class='fu'>calls_to_stacktrace</span>(<span class='no'>calls</span>)</pre>
+    <pre class="usage"><span class='fu'>wrap_error_handler_with_sentry</span>(<span class='kw'>error_handler</span> <span class='kw'>=</span> <span class='no'>default_error_handler</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>calls</th>
-      <td><p>function calls, e.g. from sys.calls()</p></td>
+      <th>error_handler</th>
+      <td><p>a function to handle plumber errors</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a data.frame</p>
+    <p>a function</p>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='no'>f</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>() <span class='fu'><a href='https://rdrr.io/r/base/stop.html'>stop</a></span>(<span class='st'>"cabin pressure lost"</span>)
-<span class='fu'>f</span>()
-<span class='fu'>calls_to_stacktrace</span>(<span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>sys.calls</a></span>())
-}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
-      <li><a href="#examples">Examples</a></li>
     </ul>
 
   </div>
