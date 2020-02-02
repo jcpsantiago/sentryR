@@ -188,8 +188,14 @@ prepare_payload <- function(...) {
     # Sentry will treat the timezone as UTC/GMT by default
     timestamp = strftime(as.POSIXlt(Sys.time(), tz = "GMT"), "%Y-%m-%dT%H:%M:%SZ"),
     event_id = uuid,
-    modules = packages,
-    ...
+    modules = packages
+  )
+
+  overrides <- list(...)
+
+  system_parameters <- utils::modifyList(
+    system_parameters,
+    overrides
   )
 
   if (!is.null(.sentry_env$payload_skeleton)) {
@@ -230,6 +236,7 @@ prepare_payload <- function(...) {
 #' capture(message = "oh hai there!") # send message to sentry
 #' }
 capture <- function(...) {
+  browser()
   if (!is_sentry_configured()) {
     stop("Sentry is not configured!")
   }

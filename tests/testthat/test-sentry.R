@@ -121,19 +121,6 @@ test_that("we build the correct headers", {
   rm(list = ls(envir = .sentry_env), envir = .sentry_env)
 })
 
-# test_that("capture_exception complains", {
-#   source(test_path("mocks.R"))
-#
-#   with_mock(
-#     is_sentry_configured = not_configured,
-#     {
-#       expect_warning(capture_exception(error_nocalls))
-#     },
-#     .env = "SentryR"
-#   )
-#
-#   rm(list = ls(envir = .sentry_env), envir = .sentry_env)
-# })
 
 # test_that("inform about Sentry responses", {
 #   source(test_path("mocks.R"))
