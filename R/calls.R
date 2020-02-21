@@ -38,20 +38,22 @@ calls_to_stacktrace <- function(calls) {
     "doTryCatch", "tryCatchList", "tryCatchOne"
   ))
 
-  names(srcrefs) <- funs
-  names(srcfiles) <- funs
+  funs_to_keep <- funs[to_keep]
+
+  names(srcrefs) <- funs_to_keep
+  names(srcfiles) <- funs_to_keep
 
   srcrefs <- srcrefs[to_keep]
 
   srcfiles <- srcfiles[to_keep]
 
   full_function_call <- as.character(calls)
-  names(full_function_call) <- funs
+  names(full_function_call) <- funs_to_keep
   full_function_call <- full_function_call[to_keep]
 
   # TODO: Offset the lines to the function definition, not the function call
   df <- tibble::tibble(
-    `function` = funs[to_keep],
+    `function` = funs_to_keep,
     raw_function = full_function_call,
     module = vapply(srcfiles, function(file) {
       if (!is.null(file$original)) {
