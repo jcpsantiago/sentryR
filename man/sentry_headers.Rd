@@ -2,7 +2,7 @@
 % Please edit documentation in R/core.R
 \name{sentry_headers}
 \alias{sentry_headers}
-\title{Set the response header}
+\title{Set the sentry.io call header}
 \usage{
 sentry_headers()
 }
@@ -10,5 +10,5 @@ sentry_headers()
 a character vector
 }
 \description{
-Set the response header
+Set the sentry.io call header
 }

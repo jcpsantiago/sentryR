@@ -40,6 +40,24 @@ test_that("parsing the dsn works", {
 test_that("setting configuration works", {
   expect_error(configure_sentry(42))
   expect_error(configure_sentry(c("https://1234@sentry.io/1", "https://1234@sentry.io/2")))
+
+  configure_sentry(dsn = "https://1234@sentry.io/1",
+                   app_name = "el appo", app_version = "8.8.8",
+                   environment = "production")
+
+  expect_equal(.sentry_env$payload_skeleton$contexts$app$app_name, "el appo")
+  expect_equal(.sentry_env$payload_skeleton$contexts$app$app_version, "8.8.8")
+  expect_equal(.sentry_env$payload_skeleton$environment, "production")
+  expect_equal(.sentry_env$dsn, "https://1234@sentry.io/1")
+  expect_equal(.sentry_env$protocol, "https")
+  expect_equal(.sentry_env$public_key, "1234")
+  expect_equal(.sentry_env$ignore, NA_character_)
+  expect_equal(.sentry_env$secret_key, NA_character_)
+  expect_equal(.sentry_env$host, "sentry.io")
+  expect_equal(.sentry_env$project_id, "1")
+
+  rm(list = ls(envir = .sentry_env), envir = .sentry_env)
+
 })
 
 test_that("builds payload correctly", {
@@ -47,7 +65,7 @@ test_that("builds payload correctly", {
 
   expect_match(
     prepare_payload(message = "foo", level = "info"),
-    '\\{"logger":"R","platform":"R","sdk":\\{"name":"SentryR","version":.*\\},"contexts":\\{"os":\\{"name":.*,"runtime":\\{"version":.*,"type":"runtime","name":"R","build":.*,"timestamp":.*,"event_id":.*,"modules":.*,"message":"foo","level":"info"\\}'
+    '\\{.*,"message":"foo","level":"info"\\}'
   )
 })
 
@@ -90,7 +108,7 @@ test_that("configuration is properly set", {
   rm(list = ls(envir = .sentry_env), envir = .sentry_env)
 })
 
-test_that("we build the correct response url", {
+test_that("we build the correct sentry.io call url", {
   .sentry_env$protocol <- "https"
   .sentry_env$host <- "sentry.io"
   .sentry_env$project_id <- "1"
@@ -120,30 +138,3 @@ test_that("we build the correct headers", {
 
   rm(list = ls(envir = .sentry_env), envir = .sentry_env)
 })
-
-
-# test_that("inform about Sentry responses", {
-#   source(test_path("mocks.R"))
-#
-#   mockery::stub(capture_exception, "is_sentry_configured", TRUE)
-#   mockery::stub(capture_exception, "httr::POST", "foobar")
-#   mockery::stub(capture_exception, "httr::status_code", 200)
-#
-#   # need a better mock
-#   # expect_message(
-#   #   capture_exception(error_nocalls),
-#   #   "Error successfully sent to Sentry, check your project for more details.\n"
-#   # )
-#
-#   mockery::stub(capture_exception, "httr::status_code", 400)
-#   mockery::stub(capture_exception, "httr::content", " error from sentry")
-#   expect_warning(
-#     capture_exception(error_nocalls),
-#     paste(
-#       "Error connecting to Sentry:",
-#       "error from sentry"
-#     )
-#   )
-#
-#   rm(list = ls(envir = .sentry_env), envir = .sentry_env)
-# })

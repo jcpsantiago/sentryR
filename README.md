@@ -77,7 +77,11 @@ list(
 ## Example with Plumber
 
 In a Plumber API, besides the initial configuration for Sentry, 
-you'll also have to set the error handler to `sentry_error_handler`
+you'll also have to set the error handler.
+
+`sentryR` ships with the default `plumber` error handler wrapped
+in the convenience function `sentry_error_handler`, but you can use
+your own function and wrap it as below:
 
 ```r
 library(plumber)
@@ -86,8 +90,10 @@ library(sentryR)
 configure_sentry(dsn = Sys.getenv('SENTRY_DSN'), 
                  app_name = "myapp", app_version = "1.0.0")
 
+my_sentry_error_handler <- wrap_error_handler_with_sentry(my_error_handler)
+
 r <- plumb("R/api.R")
-r$setErrorHandler(sentry_error_handler)
+r$setErrorHandler(my_sentry_error_handler)
 r$run(host = "0.0.0.0", port = 8000)
 ```
 

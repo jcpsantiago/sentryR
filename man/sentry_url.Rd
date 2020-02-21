@@ -2,7 +2,7 @@
 % Please edit documentation in R/core.R
 \name{sentry_url}
 \alias{sentry_url}
-\title{Build the response URL}
+\title{Build the sentry.io call URL}
 \usage{
 sentry_url()
 }
@@ -10,5 +10,5 @@ sentry_url()
 a character string
 }
 \description{
-Build the response URL
+Build the sentry.io call URL
 }

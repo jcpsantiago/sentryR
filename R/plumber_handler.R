@@ -30,8 +30,6 @@ with_captured_calls <- function(z) {
 #' @return a list
 #' @export
 default_error_handler <- function(req, res, error) {
-  print(error)
-
   li <- list()
 
   if (res$status == 200L) {

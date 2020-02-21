@@ -170,7 +170,7 @@ prepare_payload <- function(...) {
     platform = "R", # Sentry will ignore this for now
     sdk = list(
       name = "SentryR",
-      version = packages$sentryR
+      version = .sentry_env$pkg_version
     ),
     contexts = list(
       os = list(
@@ -216,7 +216,6 @@ prepare_payload <- function(...) {
   payload <- jsonlite::toJSON(
     without_nulls,
     auto_unbox = TRUE,
-    null = "null",
     na = "null"
   )
 
@@ -236,7 +235,6 @@ prepare_payload <- function(...) {
 #' capture(message = "oh hai there!") # send message to sentry
 #' }
 capture <- function(...) {
-  browser()
   if (!is_sentry_configured()) {
     stop("Sentry is not configured!")
   }
@@ -253,7 +251,7 @@ capture <- function(...) {
 
   if (resp_status_code == 201 || resp_status_code == 200) {
     resp_body <- httr::content(resp)
-    message("Your event was recorder in Sentry with ID ", resp_body$id)
+    message("Your event was recorded in Sentry with ID ", resp_body$id)
   } else {
     warning(
       "Error connecting to Sentry:",
@@ -321,7 +319,7 @@ capture_exception <- function(error, ..., level = "error") {
 }
 
 
-#' Build the response URL
+#' Build the sentry.io call URL
 #'
 #' @export
 #'
@@ -334,7 +332,7 @@ sentry_url <- function() {
 }
 
 
-#' Set the response header
+#' Set the sentry.io call header
 #'
 #' @export
 #'
