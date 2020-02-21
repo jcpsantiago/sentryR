@@ -7,7 +7,7 @@ Authors@R: c(
   person("Daniel", "Kirsch", role = "aut", email = "daniel@billie.io"),
   # copyright holders
   person("Billie", role = c("cph", "fnd")))
-Description: Capture errors and send them to a 'Sentry' project.
+Description: Capture errors and send them to a 'Sentry' <https://sentry.io> project.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
