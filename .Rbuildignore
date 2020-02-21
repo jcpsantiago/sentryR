@@ -3,3 +3,6 @@
 ^LICENSE\.md$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^cran-comments\.md$
+docs
+pkgdown
