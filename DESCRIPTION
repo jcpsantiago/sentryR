@@ -7,14 +7,16 @@ Authors@R: c(
   person("Daniel", "Kirsch", role = "aut", email = "daniel@billie.io"),
   # copyright holders
   person("Billie", role = c("cph", "fnd")))
-Description: Capture errors and send them to a 'Sentry' <https://sentry.io> project.
+Description: 'sentryR' is an R client for 'Sentry' <https://sentry.io>,
+  a self-hosted or cloud-based error-monitoring service. It will inform about
+  errors in real-time, and includes integration with the 'Plumber' package.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 ByteCompile: true
 URL: https://github.com/ozean12/sentryR
 BugReports: https://github.com/ozean12/sentryR/issues
-RoxygenNote: 7.0.1
+RoxygenNote: 7.0.2
 Imports: 
   httr,
   jsonlite,
@@ -23,7 +25,7 @@ Imports:
   tibble,
   uuid
 Suggests: 
-    covr,
-    httptest,
-    mockery,
-    testthat (>= 2.1.0)
+  covr,
+  httptest,
+  mockery,
+  testthat (>= 2.1.0)

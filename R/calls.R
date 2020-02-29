@@ -7,7 +7,7 @@
 #' \dontrun{
 #' f <- function() stop("cabin pressure lost")
 #' f()
-#' calls_to_stacktrace(sys.calls())
+#' sentryR:::calls_to_stacktrace(sys.calls())
 #' }
 calls_to_stacktrace <- function(calls) {
   srcrefs <- lapply(calls, function(call) attr(call, "srcref", exact = TRUE))
