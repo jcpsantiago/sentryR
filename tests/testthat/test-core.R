@@ -119,6 +119,12 @@ test_that("we build the correct sentry.io call url", {
 })
 
 test_that("we build the correct headers", {
+
+  # No configuration yet
+  expect_error(
+    sentry_headers()
+  )
+
   # without deprecated secret key
   .sentry_env$public_key <- "1234"
   .sentry_env$secret_key <- NA
