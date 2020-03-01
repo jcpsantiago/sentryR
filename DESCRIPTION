@@ -7,7 +7,7 @@ Authors@R: c(
   person("Daniel", "Kirsch", role = "aut", email = "daniel@billie.io"),
   # copyright holders
   person("Billie", role = c("cph", "fnd")))
-Description: 'sentryR' is an R client for 'Sentry' <https://sentry.io>,
+Description: Unofficial client for 'Sentry' <https://sentry.io>,
   a self-hosted or cloud-based error-monitoring service. It will inform about
   errors in real-time, and includes integration with the 'Plumber' package.
 License: MIT + file LICENSE

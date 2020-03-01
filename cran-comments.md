@@ -117,4 +117,7 @@ If the reviewer doesn't agree with the inclusion of the installed.packages()
 function, I would appreciate a suggestion for an alternative.
 This is my first CRAN submission.
 
+## Re-submission
 
+Re-submitting because the Description field started with 'sentryR', 
+which is not allowed.
