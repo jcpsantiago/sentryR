@@ -3,7 +3,7 @@
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-# sentryR <img src="man/figures/logo.png" align="right" width="180px"/>
+# sentryR <img src="man/figures/logo.png" align="right" width="200px"/>
 
 `sentryR` is an unofficial R SDK for [Sentry](https://sentry.io).
 It includes an error handler for Plumber for uncaught exceptions.
@@ -67,7 +67,6 @@ list(
   ),
   timestamp = ...,
   event_id = ...
-  modules = (installed packages)
 )
 ```
 
@@ -89,7 +88,7 @@ library(sentryR)
 
 # add list of installed packages and their versions.
 # this can be slow in systems with a high number of packages installed,
-# so it is not default behavior
+# so it is not the default behavior
 installed_pkgs_df <- as.data.frame(utils::installed.packages(),
 stringsAsFactors = FALSE
 )
@@ -125,8 +124,6 @@ You don't need to do any further configuration.
 
 `sentryR` took inspiration from
 [raven-clj](https://github.com/sethtrain/raven-clj) a Clojure interface to Sentry.
-
-Hex badge uses icon made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
 
 ## Contributing
 

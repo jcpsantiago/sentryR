@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">sentryR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.0</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
 
 <div id="sentryr" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#sentryr" class="anchor"></a>sentryR <img src="reference/figures/logo.png" align="right" width="180px">
+<a href="#sentryr" class="anchor"></a>sentryR <img src="reference/figures/logo.png" align="right" width="200px">
 </h1></div>
 <p><code>sentryR</code> is an unofficial R SDK for <a href="https://sentry.io">Sentry</a>. It includes an error handler for Plumber for uncaught exceptions.</p>
 <div id="installation" class="section level2">
@@ -127,8 +127,7 @@
 <a class="sourceLine" id="cb3-20" data-line-number="20">  ),</a>
 <a class="sourceLine" id="cb3-21" data-line-number="21">  <span class="dt">timestamp =</span> ...,</a>
 <a class="sourceLine" id="cb3-22" data-line-number="22">  <span class="dt">event_id =</span> ...</a>
-<a class="sourceLine" id="cb3-23" data-line-number="23">  <span class="dt">modules =</span> (installed packages)</a>
-<a class="sourceLine" id="cb3-24" data-line-number="24">)</a></code></pre></div>
+<a class="sourceLine" id="cb3-23" data-line-number="23">)</a></code></pre></div>
 <p><code>capture_exception</code> further adds the <code>exception</code> field to the payload.</p>
 </div>
 <div id="example-with-plumber" class="section level2">
@@ -139,14 +138,25 @@
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(plumber)</a>
 <a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(sentryR)</a>
 <a class="sourceLine" id="cb4-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="kw"><a href="reference/configure_sentry.html">configure_sentry</a></span>(<span class="dt">dsn =</span> <span class="kw"><a href="https://rdrr.io/r/base/Sys.getenv.html">Sys.getenv</a></span>(<span class="st">'SENTRY_DSN'</span>), </a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">                 <span class="dt">app_name =</span> <span class="st">"myapp"</span>, <span class="dt">app_version =</span> <span class="st">"1.0.0"</span>)</a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb4-7" data-line-number="7">my_sentry_error_handler &lt;-<span class="st"> </span><span class="kw"><a href="reference/wrap_error_handler_with_sentry.html">wrap_error_handler_with_sentry</a></span>(my_error_handler)</a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb4-9" data-line-number="9">r &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/plumber/man/plumber.html">plumb</a></span>(<span class="st">"R/api.R"</span>)</a>
-<a class="sourceLine" id="cb4-10" data-line-number="10">r<span class="op">$</span><span class="kw">setErrorHandler</span>(my_sentry_error_handler)</a>
-<a class="sourceLine" id="cb4-11" data-line-number="11">r<span class="op">$</span><span class="kw">run</span>(<span class="dt">host =</span> <span class="st">"0.0.0.0"</span>, <span class="dt">port =</span> <span class="dv">8000</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co"># add list of installed packages and their versions.</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co"># this can be slow in systems with a high number of packages installed,</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="co"># so it is not the default behavior</span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">installed_pkgs_df &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span>(utils<span class="op">::</span><span class="kw"><a href="https://rdrr.io/r/utils/installed.packages.html">installed.packages</a></span>(),</a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">)</a>
+<a class="sourceLine" id="cb4-10" data-line-number="10">versions &lt;-<span class="st"> </span>installed_pkgs_df<span class="op">$</span>Version</a>
+<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="kw"><a href="https://rdrr.io/r/base/names.html">names</a></span>(versions) &lt;-<span class="st"> </span>installed_pkgs_df<span class="op">$</span>Package</a>
+<a class="sourceLine" id="cb4-12" data-line-number="12">packages &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/list.html">as.list</a></span>(versions)</a>
+<a class="sourceLine" id="cb4-13" data-line-number="13"></a>
+<a class="sourceLine" id="cb4-14" data-line-number="14"><span class="kw"><a href="reference/configure_sentry.html">configure_sentry</a></span>(<span class="dt">dsn =</span> <span class="kw"><a href="https://rdrr.io/r/base/Sys.getenv.html">Sys.getenv</a></span>(<span class="st">'SENTRY_DSN'</span>), </a>
+<a class="sourceLine" id="cb4-15" data-line-number="15">                 <span class="dt">app_name =</span> <span class="st">"myapp"</span>, <span class="dt">app_version =</span> <span class="st">"1.0.0"</span>,</a>
+<a class="sourceLine" id="cb4-16" data-line-number="16">         <span class="dt">modules =</span> packages)</a>
+<a class="sourceLine" id="cb4-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb4-18" data-line-number="18">my_sentry_error_handler &lt;-<span class="st"> </span><span class="kw"><a href="reference/wrap_error_handler_with_sentry.html">wrap_error_handler_with_sentry</a></span>(my_error_handler)</a>
+<a class="sourceLine" id="cb4-19" data-line-number="19"></a>
+<a class="sourceLine" id="cb4-20" data-line-number="20">r &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/plumber/man/plumber.html">plumb</a></span>(<span class="st">"R/api.R"</span>)</a>
+<a class="sourceLine" id="cb4-21" data-line-number="21">r<span class="op">$</span><span class="kw">setErrorHandler</span>(my_sentry_error_handler)</a>
+<a class="sourceLine" id="cb4-22" data-line-number="22">r<span class="op">$</span><span class="kw">run</span>(<span class="dt">host =</span> <span class="st">"0.0.0.0"</span>, <span class="dt">port =</span> <span class="dv">8000</span>)</a></code></pre></div>
 <p>and wrap your endpoint functions with <code>with_captured_calls</code></p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co">#* @get /error</span></a>
 <a class="sourceLine" id="cb5-2" data-line-number="2">api_error &lt;-<span class="st"> </span><span class="kw"><a href="reference/with_captured_calls.html">with_captured_calls</a></span>(<span class="cf">function</span>(res, req){</a>
@@ -158,7 +168,6 @@
 <h2 class="hasAnchor">
 <a href="#acknowledgements" class="anchor"></a>Acknowledgements</h2>
 <p><code>sentryR</code> took inspiration from <a href="https://github.com/sethtrain/raven-clj">raven-clj</a> a Clojure interface to Sentry.</p>
-<p>Hex badge uses icon made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a></p>
 </div>
 <div id="contributing" class="section level2">
 <h2 class="hasAnchor">
