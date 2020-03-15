@@ -156,13 +156,6 @@ prepare_payload <- function(...) {
     x = uuid::UUIDgenerate(use.time = TRUE)
   )
 
-  installed_pkgs_df <- as.data.frame(utils::installed.packages(),
-    stringsAsFactors = FALSE
-  )
-  versions <- installed_pkgs_df$Version
-  names(versions) <- installed_pkgs_df$Package
-  packages <- as.list(versions)
-
   sys_info <- Sys.info()
 
   system_parameters <- list(
@@ -187,8 +180,7 @@ prepare_payload <- function(...) {
     ),
     # Sentry will treat the timezone as UTC/GMT by default
     timestamp = strftime(as.POSIXlt(Sys.time(), tz = "GMT"), "%Y-%m-%dT%H:%M:%SZ"),
-    event_id = uuid,
-    modules = packages
+    event_id = uuid
   )
 
   overrides <- list(...)

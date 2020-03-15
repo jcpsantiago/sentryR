@@ -4,7 +4,7 @@
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-# sentryR <img src="man/figures/logo.png" align="right" width="180px"/>
+# sentryR <img src="man/figures/logo.png" align="right" width="200px"/>
 
 `sentryR` is an unofficial R SDK for [Sentry](https://sentry.io).
 It includes an error handler for Plumber for uncaught exceptions.
@@ -68,7 +68,6 @@ list(
   ),
   timestamp = ...,
   event_id = ...
-  modules = (installed packages)
 )
 ```
 
@@ -88,8 +87,19 @@ your own function and wrap it as below:
 library(plumber)
 library(sentryR)
 
+# add list of installed packages and their versions.
+# this can be slow in systems with a high number of packages installed,
+# so it is not the default behavior
+installed_pkgs_df <- as.data.frame(utils::installed.packages(),
+stringsAsFactors = FALSE
+)
+versions <- installed_pkgs_df$Version
+names(versions) <- installed_pkgs_df$Package
+packages <- as.list(versions)
+
 configure_sentry(dsn = Sys.getenv('SENTRY_DSN'), 
-                 app_name = "myapp", app_version = "1.0.0")
+                 app_name = "myapp", app_version = "1.0.0",
+		 modules = packages)
 
 my_sentry_error_handler <- wrap_error_handler_with_sentry(my_error_handler)
 
@@ -115,8 +125,6 @@ You don't need to do any further configuration.
 
 `sentryR` took inspiration from
 [raven-clj](https://github.com/sethtrain/raven-clj) a Clojure interface to Sentry.
-
-Hex badge uses icon made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
 
 ## Contributing
 
