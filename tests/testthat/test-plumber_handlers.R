@@ -1,9 +1,9 @@
 context("test handlers")
 
 test_that("default_error_handler works", {
-
   mock_req <- make_req("angel_attack", "/launch_eva01",
-                       body = '[{"battery_level": "5 min"}]')
+    body = '[{"battery_level": "5 min"}]'
+  )
   mock_res <- plumber:::PlumberResponse$new()
   handled <- default_error_handler(mock_req, mock_res, simpleError("NO! NO! NO!"))
 
@@ -39,5 +39,10 @@ test_that("default_error_handler works", {
   expect_equal(
     handled$error, "Internal error"
   )
+})
 
+test_that("we can wrap error handlers with sentry", {
+  wrapped <- wrap_error_handler_with_sentry()
+
+  expect_true(is.function(wrapped))
 })
