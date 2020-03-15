@@ -121,3 +121,29 @@ This is my first CRAN submission.
 
 Re-submitting because the Description field started with 'sentryR', 
 which is not allowed.
+
+# Round 3
+## Reviwer comments
+
+2020-03-06 Swetlana Herbrandt
+
+```
+Thanks, please write package names, software names and API names in single quotes (e.g. 'Sentry') in Title and Description.
+
+You are using installed.packages():
+"This needs to read several files per installed package, which will be slow on Windows and on some network-mounted file systems.
+It will be slow when thousands of packages are installed, so do not use it to find out if a named package is installed (use find.package or system.file) nor to find out if a package is usable (call requireNamespace or require and check the return value) nor to find details of a small number of packages (use packageDescription)."
+[installed.packages() help page]
+```
+
+## Submission comments
+
+2020-03-15
+
+Thank you for the review, your comments are much appreciated it.
+
+I have removed the usage of `installed.packages()` completely.
+Instead, I instruct the user how to add that information at runtime if needed.
+
+I also changed every instance of a package name, API or other piece of software
+to include single quotes.
