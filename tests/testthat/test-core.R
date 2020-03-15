@@ -1,4 +1,4 @@
-context("test-sentry")
+context("test-sentry-core")
 
 test_that("parsing the dsn works", {
   expect_error(parse_dsn(888))
@@ -41,9 +41,11 @@ test_that("setting configuration works", {
   expect_error(configure_sentry(42))
   expect_error(configure_sentry(c("https://1234@sentry.io/1", "https://1234@sentry.io/2")))
 
-  configure_sentry(dsn = "https://1234@sentry.io/1",
-                   app_name = "el appo", app_version = "8.8.8",
-                   environment = "production")
+  configure_sentry(
+    dsn = "https://1234@sentry.io/1",
+    app_name = "el appo", app_version = "8.8.8",
+    environment = "production"
+  )
 
   expect_equal(.sentry_env$payload_skeleton$contexts$app$app_name, "el appo")
   expect_equal(.sentry_env$payload_skeleton$contexts$app$app_version, "8.8.8")
@@ -57,7 +59,6 @@ test_that("setting configuration works", {
   expect_equal(.sentry_env$project_id, "1")
 
   rm(list = ls(envir = .sentry_env), envir = .sentry_env)
-
 })
 
 test_that("builds payload correctly", {
@@ -119,6 +120,12 @@ test_that("we build the correct sentry.io call url", {
 })
 
 test_that("we build the correct headers", {
+
+  # No configuration yet
+  expect_error(
+    sentry_headers()
+  )
+
   # without deprecated secret key
   .sentry_env$public_key <- "1234"
   .sentry_env$secret_key <- NA
