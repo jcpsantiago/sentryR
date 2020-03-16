@@ -5,7 +5,7 @@
 
 # sentryR <img src="man/figures/logo.png" align="right" width="200px"/>
 
-`sentryR` is an unofficial R SDK for [Sentry](https://sentry.io).
+`sentryR` is an unofficial R client for [Sentry](https://sentry.io).
 It includes an error handler for Plumber for uncaught exceptions.
 
 ## Installation
