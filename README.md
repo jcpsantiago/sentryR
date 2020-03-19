@@ -6,15 +6,15 @@
 
 # sentryR <img src="man/figures/logo.png" align="right" width="200px"/>
 
-`sentryR` is an unofficial R SDK for [Sentry](https://sentry.io).
+`sentryR` is an unofficial R client for [Sentry](https://sentry.io).
 It includes an error handler for Plumber for uncaught exceptions.
 
 ## Installation
-You can install the current development version of `sentryR` with:
+You can install the latest development version of `sentryR` with:
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("ozean12/sentryR")
+remotes::install_github("ozean12/sentryR", ref = "development")
 ```
 
 ## Using sentryR
