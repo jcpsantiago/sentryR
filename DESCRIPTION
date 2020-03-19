@@ -1,7 +1,7 @@
 Package: sentryR
 Type: Package
 Title: Send Errors and Messages to Sentry
-Version: 1.1.0
+Version: 1.1.1
 Authors@R: c(
   person("Joao", "Santiago", email = "santiago@billie.io", role = c("aut", "cre")),
   person("Daniel", "Kirsch", role = "aut", email = "daniel@billie.io"),
