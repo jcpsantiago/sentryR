@@ -44,7 +44,7 @@ default_error_handler <- function(req, res, error) {
 
   # Don't overly leak data unless the user opts-in
   if (getOption("plumber.debug", FALSE)) {
-    li["message"] <- as.character(error)
+    li["message"] <- gsub("\\n", "", as.character(error))
   }
 
   li
