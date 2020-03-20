@@ -5,4 +5,4 @@
 # FIXME: should use utils::packageVersion() instead, but that's not working
 # with CRAN because the package is checked before being installed, thus there is
 # no sentryR package to get the version from
-.sentry_env$pkg_version <- "1.0.0"
+.sentry_env$pkg_version <- "1.2.0"
