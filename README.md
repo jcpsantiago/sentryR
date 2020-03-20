@@ -14,7 +14,7 @@ You can install the latest development version of `sentryR` with:
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("ozean12/sentryR", ref = "development")
+remotes::install_github("ozean12/sentryR")
 ```
 
 or the stable version in CRAN with:
