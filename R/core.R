@@ -228,7 +228,8 @@ prepare_payload <- function(...) {
 #' }
 capture <- function(...) {
   if (!is_sentry_configured()) {
-    stop("Sentry is not configured!")
+    warning("Sentry is not configured. Nothing was reported!")
+    return()
   }
 
   payload <- prepare_payload(...)
