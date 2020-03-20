@@ -34,7 +34,7 @@ default_error_handler <- function(req, res, error) {
 
   if (res$status == 200L) {
     # The default is a 200. If that's still set, then we should probably override with a 500.
-    # It's possible, however, than a handler set a 40x and then wants to use this function to
+    # It's possible, however, a handler set a 40x and then wants to use this function to
     # render an error, though.
     res$status <- 500
     li$error <- "500 - Internal server error"
@@ -48,6 +48,33 @@ default_error_handler <- function(req, res, error) {
   }
 
   li
+}
+
+
+#' Unboxed JSON error handler for Plumber
+#'
+#' @param req a Plumber request object
+#' @param res a Plumber response object
+#' @param error an error object
+#'
+#' @return a list
+#' @export
+unboxed_error_handler <- function(req, res, error) {
+  li <- list()
+
+  if (res$status == 200L) {
+    # The default is a 200. If that's still set, then we should probably override with a 500.
+    # It's possible, however, a handler set a 40x and then wants to use this function to
+    # render an error, though.
+    res$status <- 500
+    li$error <- "500 - Internal server error"
+  } else {
+    li$code <- res$status
+  }
+
+  li$message <- gsub("\\n", "", as.character(error))
+
+  res$body <- li
 }
 
 
