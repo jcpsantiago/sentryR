@@ -17,6 +17,13 @@ You can install the latest development version of `sentryR` with:
 remotes::install_github("ozean12/sentryR", ref = "development")
 ```
 
+or the stable version in CRAN with:
+
+```r
+install.packages("sentryR")
+```
+
+
 ## Using sentryR
 
 `configure_sentry` and `capture` are the two core functions of `sentryR`.
