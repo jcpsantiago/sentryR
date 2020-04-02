@@ -131,6 +131,7 @@ You don't need to do any further configuration.
 ## TODO
 * test the error handling functions, needs mocking?
 * posting to sentry asynchronously
+* vignettes
 
 ## Acknowledgements
 
