@@ -128,6 +128,10 @@ once this is done, Plumber will handle any errors, send them to Sentry using
 `capture_exception`, and respond with status `500` and the error message.
 You don't need to do any further configuration.
 
+## TODO
+* test the error handling functions, needs mocking?
+* posting to sentry asynchronously
+
 ## Acknowledgements
 
 `sentryR` took inspiration from
