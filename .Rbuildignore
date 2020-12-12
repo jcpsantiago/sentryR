@@ -1,5 +1,4 @@
 ^codecov\.yml$
-^\.travis\.yml$
 ^LICENSE\.md$
 ^.*\.Rproj$
 ^\.Rproj\.user$
@@ -7,3 +6,4 @@
 docs
 pkgdown
 ^CRAN-RELEASE$
+^\.github$
