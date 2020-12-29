@@ -128,6 +128,31 @@ once this is done, Plumber will handle any errors, send them to Sentry using
 `capture_exception`, and respond with status `500` and the error message.
 You don't need to do any further configuration.
 
+## Example with Shiny
+
+You can also use `sentryR` to capture exceptions in your Shiny applications
+by providing a callback function to the `shiny.error` option.
+
+```r
+library(shiny)
+library(sentryR)
+
+configure_sentry(dsn = Sys.getenv('SENTRY_DSN'), 
+                 app_name = "myapp", app_version = "1.0.0",
+		 modules = packages)
+
+error_handler <- function() {
+    capture_exception(error = geterrmessage())
+}
+
+options(shiny.error = error_handler)
+
+shinyServer(function(input, output) {
+    # Define server logic
+    ...
+}
+```
+
 ## TODO
 * test the error handling functions, needs mocking?
 * posting to sentry asynchronously
