@@ -106,7 +106,7 @@ packages <- as.list(versions)
 
 configure_sentry(dsn = Sys.getenv('SENTRY_DSN'), 
                  app_name = "myapp", app_version = "1.0.0",
-		 modules = packages)
+                 modules = packages)
 
 my_sentry_error_handler <- wrap_error_handler_with_sentry(my_error_handler)
 
