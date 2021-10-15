@@ -59,7 +59,7 @@ default_error_handler <- function(req, res, error) {
 #' @export
 wrap_error_handler_with_sentry <- function(error_handler = default_error_handler) {
   function(req, res, error, ...) {
-    if (!is.null(req$postBody) && length(req$postBody) > 0 && req$HTTP_CONTENT_TYPE == "application/json") {
+    if (!is.null(req$postBody) && length(req$postBody) > 0 && grepl(pattern = "application/json", x = req$HTTP_CONTENT_TYPE, fixed = T) ) {
       req_body <- list(
         data = lapply(jsonlite::fromJSON(req$postBody), function(x) utils::head(x, 10))
       )
