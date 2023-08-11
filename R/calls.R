@@ -10,51 +10,25 @@
 #' sentryR:::calls_to_stacktrace(sys.calls())
 #' }
 calls_to_stacktrace <- function(calls) {
+  # note, attr(NULL, ...) is NULL
   srcrefs <- lapply(calls, function(call) attr(call, "srcref", exact = TRUE))
-  srcfiles <- lapply(srcrefs, function(ref) {
-    if (!is.null(ref)) {
-      attr(ref, "srcfile", exact = TRUE)
-    }
-  })
-
-  # https://github.com/rstudio/shiny/blob/master/R/conditions.R#L64
-  funs <- sapply(calls, function(call) {
-    if (is.function(call[[1]])) {
-      "<Anonymous>"
-    } else if (inherits(call[[1]], "call")) {
-      paste0(format(call[[1]]), collapse = " ")
-    } else if (typeof(call[[1]]) == "promise") {
-      "<Promise>"
-    } else {
-      paste0(as.character(call[[1]]), collapse = " ")
-    }
-  })
-
-  # calls to stop, h and internal calls to tryCatch etc are not
-  # informative in the stacktrace, so we remove them here
-  # similar to https://github.com/rstudio/shiny/blob/master/R/conditions.R#L399
-  to_keep <- !(funs %in% c(
-    "stop", ".handleSimpleError", "h",
-    "doTryCatch", "tryCatchList", "tryCatchOne"
-  ))
-
-  funs_to_keep <- funs[to_keep]
-
-  names(srcrefs) <- funs_to_keep
-  names(srcfiles) <- funs_to_keep
-
-  srcrefs <- srcrefs[to_keep]
-
-  srcfiles <- srcfiles[to_keep]
-
-  full_function_call <- as.character(calls)
-  names(full_function_call) <- funs_to_keep
-  full_function_call <- full_function_call[to_keep]
+  srcfiles <- lapply(srcrefs, function(ref) attr(ref, "srcfile", exact = TRUE))
 
   # TODO: Offset the lines to the function definition, not the function call
   df <- tibble::tibble(
-    `function` = funs_to_keep,
-    raw_function = full_function_call,
+    `function` = sapply(calls, function(call) {
+      # https://github.com/rstudio/shiny/blob/master/R/conditions.R#L64
+      if (is.function(call[[1]])) {
+        "<Anonymous>"
+      } else if (inherits(call[[1]], "call")) {
+        paste0(format(call[[1]]), collapse = " ")
+      } else if (typeof(call[[1]]) == "promise") {
+        "<Promise>"
+      } else {
+        paste0(as.character(call[[1]]), collapse = " ")
+      }
+    }),
+    raw_function = as.character(calls),
     module = vapply(srcfiles, function(file) {
       if (!is.null(file$original)) {
         return(basename(file$original$filename))
@@ -82,7 +56,7 @@ calls_to_stacktrace <- function(calls) {
         return(file$lines[[line]])
       }
       return(NA_character_)
-    }, srcfiles, lineno)),
+    }, srcfiles, lineno, SIMPLIFY = FALSE)),
     pre_context = mapply(function(file, line) {
       if (!is.null(file)) {
         # 5 line window is recommended by Sentry
@@ -96,7 +70,7 @@ calls_to_stacktrace <- function(calls) {
         return(file$lines[start_line:(line - 1)])
       }
       return(NA_character_)
-    }, srcfiles, lineno),
+    }, srcfiles, lineno, SIMPLIFY = FALSE),
     post_context = mapply(function(file, line) {
       if (!is.null(file)) {
         if (!is.null(file$original)) {
@@ -106,8 +80,23 @@ calls_to_stacktrace <- function(calls) {
         return(file$lines[(line + 1):(line + 5)])
       }
       return(NA_character_)
-    }, srcfiles, lineno)
+    }, srcfiles, lineno, SIMPLIFY = FALSE)
   )
+
+  # Remove "boring" calls within internal error handling functions,
+  # as in https://github.com/rstudio/shiny/blob/master/R/conditions.R#L399
+  do_keep <- !(df$`function` %in% c(
+    "stop", ".handleSimpleError", "h",
+    "doTryCatch", "tryCatchList", "tryCatchOne"
+  ))
+  df <- df[do_keep, ]
+
+  # Name the vector elements of each column by the bare function name
+  for (col in colnames(df)) {
+    if (col != "function") {
+      names(df[[col]]) <- df$`function`
+    }
+  }
 
   df
 }
