@@ -71,18 +71,17 @@ configure_sentry <- function(dsn, app_name = NULL, app_version = NULL,
 
   dsn_vars <- parse_dsn(dsn)
 
-  user_vars <- list(
+  skeleton <- list(
     environment = environment,
     contexts = list(
       app = list(
         app_name = app_name,
         app_version = app_version
       )
-    ),
-    ...
+    )
   )
 
-  .sentry_env$payload_skeleton <- user_vars
+  .sentry_env$payload_skeleton <- utils::modifyList(skeleton, list(...))
 
   invisible(list2env(dsn_vars, .sentry_env))
 }

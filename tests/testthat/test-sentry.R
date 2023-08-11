@@ -43,10 +43,12 @@ test_that("setting configuration works", {
 
   configure_sentry(dsn = "https://1234@sentry.io/1",
                    app_name = "el appo", app_version = "8.8.8",
-                   environment = "production")
+                   environment = "production",
+                   contexts = list(app = list(app_identifier = "APPO")))
 
   expect_equal(.sentry_env$payload_skeleton$contexts$app$app_name, "el appo")
   expect_equal(.sentry_env$payload_skeleton$contexts$app$app_version, "8.8.8")
+  expect_equal(.sentry_env$payload_skeleton$contexts$app$app_identifier, "APPO")
   expect_equal(.sentry_env$payload_skeleton$environment, "production")
   expect_equal(.sentry_env$dsn, "https://1234@sentry.io/1")
   expect_equal(.sentry_env$protocol, "https")
