@@ -140,3 +140,92 @@ test_that("we build the correct headers", {
 
   rm(list = ls(envir = .sentry_env), envir = .sentry_env)
 })
+
+test_that("we build the call stack correctly", {
+  # Get a call list with a "boring" .handleSimpleError in it
+  get_calls <- function() sys.calls()
+  .handleSimpleError <- function() get_calls()
+  get_calls_with_boring <- function(n) .handleSimpleError()
+  calls_with_boring <- get_calls_with_boring(123)
+
+  # For testing, only process the calls within this function
+  final_calls_with_boring <- tail(calls_with_boring, 3)
+  stacktrace <- calls_to_stacktrace(final_calls_with_boring)
+  expect_equal(
+    colnames(stacktrace), c(
+      "function", "raw_function", "module", "abs_path",
+      "filename", "lineno", "context_line", "pre_context", "post_context"
+    )
+  )
+
+  # The calls on the stack should be
+  # - get_calls_with_boring()
+  # [.handleSimpleError() should be skipped]
+  # - get_calls()
+
+  expect_equal(
+    stacktrace$`function`,
+    c("get_calls_with_boring", "get_calls")
+  )
+
+  expect_equal(stacktrace$raw_function, c(
+    get_calls_with_boring = "get_calls_with_boring(123)",
+    get_calls = "get_calls()"
+  ))
+
+  # TODO: How to check 'module'?
+
+  expect_equal(
+    stacktrace$filename,
+    c(get_calls_with_boring = "test-sentry.R", get_calls = "test-sentry.R")
+  )
+
+  first_line = stacktrace$lineno[[1]]
+  expect_equal(
+    stacktrace$lineno,
+    c(get_calls_with_boring = first_line, get_calls = first_line - 2)
+  )
+
+  expect_equal(stacktrace$context_line, c(
+    get_calls_with_boring =
+      "  calls_with_boring <- get_calls_with_boring(123)",
+    get_calls =
+      "  .handleSimpleError <- function() get_calls()"
+  ))
+
+  expect_equal(stacktrace$pre_context, list(
+    get_calls_with_boring = c(
+      "test_that(\"we build the call stack correctly\", {",
+      "  # Get a call list with a \"boring\" .handleSimpleError in it",
+      "  get_calls <- function() sys.calls()",
+      "  .handleSimpleError <- function() get_calls()",
+      "  get_calls_with_boring <- function(n) .handleSimpleError()"
+    ),
+    get_calls = c(
+      "})",
+      "",
+      "test_that(\"we build the call stack correctly\", {",
+      "  # Get a call list with a \"boring\" .handleSimpleError in it",
+      "  get_calls <- function() sys.calls()"
+    )
+  ))
+
+  expect_equal(stacktrace$post_context, list(
+    get_calls_with_boring = c(
+      "",
+      "  # For testing, only process the calls within this function",
+      "  final_calls_with_boring <- tail(calls_with_boring, 3)",
+      "  stacktrace <- calls_to_stacktrace(final_calls_with_boring)",
+      "  expect_equal("
+    ),
+    get_calls = c(
+      "  get_calls_with_boring <- function(n) .handleSimpleError()",
+      "  calls_with_boring <- get_calls_with_boring(123)",
+      "",
+      "  # For testing, only process the calls within this function",
+      "  final_calls_with_boring <- tail(calls_with_boring, 3)"
+    )
+  ))
+
+  rm(list = ls(envir = .sentry_env), envir = .sentry_env)
+})
