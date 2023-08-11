@@ -1,16 +1,16 @@
-message("🌱 sentryR/.Rprofile: activating `renv`")
-source("renv/activate.R")
-message()
+.maybe_message <- if (interactive()) message else function(...) {invisible()}
 
 .home_rprofile <- path.expand("~/.Rprofile")
 if (file.exists(.home_rprofile)) {
-  message("🏠 sentryR/.Rprofile: loading ", .home_rprofile)
+  .maybe_message("🏠 sentryR/.Rprofile: loading ~/.Rprofile")
   source(.home_rprofile)
-  message()
+  .maybe_message()
 }
 
-message("▶️ sentryR/.Rprofile: all set")
-message("- use `devtools::load_all()` to load library")
-message("- use `devtools::test()` to run tests")
+if (!isNamespaceLoaded("renv")) {
+  .maybe_message("🌱 sentryR/.Rprofile: activating `renv`")
+  source("renv/activate.R")
+  .maybe_message()
+}
 
 invisible()
