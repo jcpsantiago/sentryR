@@ -25,7 +25,10 @@ Imports:
   tibble,
   uuid
 Suggests: 
+  bunny,
   covr,
   httptest,
   mockery,
   testthat (>= 2.1.0)
+Remotes:
+  github::dmi3kno/bunny

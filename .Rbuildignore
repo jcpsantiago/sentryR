@@ -1,3 +1,5 @@
+^renv$
+^renv\.lock$
 ^codecov\.yml$
 ^LICENSE\.md$
 ^.*\.Rproj$
