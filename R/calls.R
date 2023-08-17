@@ -30,13 +30,11 @@ calls_to_stacktrace <- function(calls) {
     }
   })
 
-  # calls to stop, h and internal calls to tryCatch etc are not
-  # informative in the stacktrace, so we remove them here
-  # similar to https://github.com/rstudio/shiny/blob/master/R/conditions.R#L399
-  to_keep <- !(funs %in% c(
-    "stop", ".handleSimpleError", "h",
-    "doTryCatch", "tryCatchList", "tryCatchOne"
-  ))
+  # drop calls to uninformative error handling internals, as in
+  # https://github.com/rstudio/shiny/blob/master/R/conditions.R#L399
+  to_keep <- !(funs %in%
+    c(".handleSimpleError", "h", "doTryCatch", "tryCatchList", "tryCatchOne")
+  )
 
   funs_to_keep <- funs[to_keep]
 
