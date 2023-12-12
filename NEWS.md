@@ -1,3 +1,7 @@
+# sentryR 1.1.2
+
+* Restarting releases to CRAN.
+
 # sentryR 1.0.0
 
 * New functions `capture_*` to decouple the base functionality of Sentry
