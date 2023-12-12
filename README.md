@@ -1,7 +1,7 @@
 [![R-CMD-check](https://github.com/ozean12/sentryR/workflows/R-CMD-check/badge.svg)](https://github.com/jcpsantiago/sentryR/actions)
 [![CRAN status](https://www.r-pkg.org/badges/version/sentryR)](https://CRAN.R-project.org/package=sentryR)
-[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/license/mit/)
 
 # sentryR <img src="man/figures/logo.png" align="right" width="200px"/>
 
