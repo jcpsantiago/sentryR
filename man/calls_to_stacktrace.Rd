@@ -19,6 +19,6 @@ Convert function call to a stack trace
 \dontrun{
 f <- function() stop("cabin pressure lost")
 f()
-sentryR:::calls_to_stacktrace(sys.calls())
+calls_to_stacktrace(sys.calls())
 }
 }
