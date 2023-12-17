@@ -3,12 +3,6 @@
 #' @param calls function calls, e.g. from sys.calls()
 #'
 #' @return a data.frame
-#' @examples
-#' \dontrun{
-#' f <- function() stop("cabin pressure lost")
-#' f()
-#' calls_to_stacktrace(sys.calls())
-#' }
 calls_to_stacktrace <- function(calls) {
   srcrefs <- lapply(calls, function(call) attr(call, "srcref", exact = TRUE))
   srcfiles <- lapply(srcrefs, function(ref) {
