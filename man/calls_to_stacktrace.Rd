@@ -15,10 +15,3 @@ a data.frame
 \description{
 Convert function call to a stack trace
 }
-\examples{
-\dontrun{
-f <- function() stop("cabin pressure lost")
-f()
-sentryR:::calls_to_stacktrace(sys.calls())
-}
-}
