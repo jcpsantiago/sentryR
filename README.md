@@ -13,7 +13,7 @@ You can install the latest development version of `sentryR` with:
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("ozean12/sentryR")
+remotes::install_github("jcpsantiago/sentryR")
 ```
 
 or the stable version in CRAN with:
@@ -28,8 +28,8 @@ install.packages("sentryR")
 `configure_sentry` and `capture` are the two core functions of `sentryR`.
 The first sets up an isolated environment with your Sentry project's DSN,
 optionally your app's name, version and the environment it's running in.
-Both `configure_sentry` and any of the `capture_` functions accept 
-additional fields to pass on to Sentry as named lists. 
+Both `configure_sentry` and any of the `capture_` functions accept
+additional fields to pass on to Sentry as named lists.
 `NULL`ifying a field will remove it.
 
 ```r
@@ -82,7 +82,7 @@ list(
 
 ## Example with Plumber
 
-In a Plumber API, besides the initial configuration for Sentry, 
+In a Plumber API, besides the initial configuration for Sentry,
 you'll also have to set the error handler.
 
 `sentryR` ships with the default `plumber` error handler wrapped
@@ -103,7 +103,7 @@ versions <- installed_pkgs_df$Version
 names(versions) <- installed_pkgs_df$Package
 packages <- as.list(versions)
 
-configure_sentry(dsn = Sys.getenv('SENTRY_DSN'), 
+configure_sentry(dsn = Sys.getenv('SENTRY_DSN'),
                  app_name = "myapp", app_version = "1.0.0",
                  modules = packages)
 
@@ -136,7 +136,7 @@ by providing a callback function to the `shiny.error` option.
 library(shiny)
 library(sentryR)
 
-configure_sentry(dsn = Sys.getenv('SENTRY_DSN'), 
+configure_sentry(dsn = Sys.getenv('SENTRY_DSN'),
                  app_name = "myapp", app_version = "1.0.0",
 		 modules = packages)
 
@@ -151,11 +151,6 @@ shinyServer(function(input, output) {
     ...
 }
 ```
-
-## TODO
-* test the error handling functions, needs mocking?
-* posting to sentry asynchronously
-* vignettes
 
 ## Acknowledgements
 
